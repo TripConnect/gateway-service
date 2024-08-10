@@ -50,7 +50,7 @@ const resolvers = {
         users: async (
             _: any,
             { searchTerm }: { searchTerm: string },
-            { token }: { token: string }
+            { token, currentUserId }: { token: string, currentUserId: string }
         ) => {
             let data = await UserService.searchUser({ term: searchTerm });
             return data.users;

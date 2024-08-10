@@ -38,7 +38,6 @@ connect(process.env.MONGODB_CONNECTION_STRING as string);
 
 const chatNamespace = io.of('/chat');
 chatNamespace.on("connection", async (socket) => {
-    console.info("connected");
     let { token } = socket.handshake.auth;
     if (!token) {
         socket.disconnect(true);
@@ -47,6 +46,7 @@ chatNamespace.on("connection", async (socket) => {
     }
     let { userId } = jwt.verify(token, process.env.SECRET_KEY || "") as { userId: string };
     socket.data.userId = userId;
+    console.info({ message: "Chat socket connected", userId });
 
     let rpcConversations = await ChatService.searchConversations({ memberIds: [userId] });
 
@@ -55,7 +55,7 @@ chatNamespace.on("connection", async (socket) => {
             message: "Join conversation",
             userId: socket.data.userId,
             conversationId: conversation.id,
-        })
+        });
         socket.join(conversation.id);
     }
 
@@ -70,7 +70,7 @@ chatNamespace.on("connection", async (socket) => {
                 content,
                 createdAt: rpcMessage.createdAt,
             }
-            logger.info(chatPayload);
+            logger.debug({message: "New chat message", payload: chatPayload});
             chatNamespace.to(conversationId).emit("message", chatPayload);
         } catch (error: any) {
             console.error(error);
