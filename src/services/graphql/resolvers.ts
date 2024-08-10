@@ -89,11 +89,9 @@ const resolvers = {
         ) => {
             try {
                 let rpcConversation = await ChatService.findConversation({ conversationId: id });
-                // let rpcMembers = await UserService.searchUser({ userIds: rpcConversation.memberIds });
                 
                 let responseConversation = {
                     ...rpcConversation,
-                    // members: rpcMembers.users,
                 };
                 return responseConversation;
             } catch (error: any) {
@@ -126,6 +124,7 @@ const resolvers = {
             conversation: any,
             { messagePage, messageLimit }: { messagePage: number, messageLimit: number },
         ) => {
+            logger.debug({ messagePage, messageLimit });
             let rpcConversation = await ChatService.findConversation({ conversationId: conversation.id, messagePage: messagePage, messageLimit: messageLimit });
 
             let senderIds: string[] = Array.from(new Set(rpcConversation.messages.map((m: any) => m.fromUserId )));
