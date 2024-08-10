@@ -84,22 +84,16 @@ const resolvers = {
         },
         conversation: async (
             _: any,
-            { id, page = -1, limit = 100 }: { id: string, page: number, limit: number },
+            { id, messagePage = 1, messageLimit = 1 }: { id: string, messagePage: number, messageLimit: number },
             { token }: { token: string }
         ) => {
             try {
-                let rpcConversation = await ChatService.findConversation({ conversationId: id, page: page, limit: limit });
-                let rpcMembers = await UserService.searchUser({ userIds: rpcConversation.memberIds });
-
+                let rpcConversation = await ChatService.findConversation({ conversationId: id });
+                // let rpcMembers = await UserService.searchUser({ userIds: rpcConversation.memberIds });
+                
                 let responseConversation = {
                     ...rpcConversation,
-                    members: rpcMembers.users,
-                    messages: rpcConversation.messages.map((message: any) => {
-                        return {
-                           ...message,
-                            fromUser: rpcMembers.users.find((rpcUser: any) => rpcUser.id === message.fromUserId)
-                        }
-                    }),
+                    // members: rpcMembers.users,
                 };
                 return responseConversation;
             } catch (error: any) {
@@ -119,6 +113,31 @@ const resolvers = {
                         });
                 }
             }
+        }
+    },
+    Conversation: {
+        members: async (
+            conversation: any,
+        ) => {
+            let rpcMembers = await UserService.searchUser({ userIds: conversation.memberIds });
+            return rpcMembers.users;
+        },
+        messages: async (
+            conversation: any,
+            { messagePage, messageLimit }: { messagePage: number, messageLimit: number },
+        ) => {
+            let rpcConversation = await ChatService.findConversation({ conversationId: conversation.id, messagePage: messagePage, messageLimit: messageLimit });
+
+            let senderIds: string[] = Array.from(new Set(rpcConversation.messages.map((m: any) => m.fromUserId )));
+            let rpcSenders = await UserService.searchUser({ userIds: senderIds});
+            
+            let messages = rpcConversation.messages.map((message: any) => {
+                return {
+                    ...message,
+                    fromUser: rpcSenders.users.find((user: any) => user.id === message.fromUserId)
+                }
+            });
+            return messages;
         }
     },
     Mutation: {

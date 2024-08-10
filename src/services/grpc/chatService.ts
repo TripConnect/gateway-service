@@ -31,9 +31,9 @@ export default class ChatService extends ServiceBase {
     }
 
     public static async findConversation(
-        { conversationId, page = -1, limit = 100 }: { conversationId: string, page?: number, limit?: number }): Promise<any> {
+        { conversationId, messagePage = 1, messageLimit = 1 }: { conversationId: string, messagePage?: number, messageLimit?: number }): Promise<any> {
         return new Promise((resolve, reject) => {
-            ChatService.stub.FindConversation({ conversationId, page, limit }, (error: Error, result: any) => {
+            ChatService.stub.FindConversation({ conversationId, messagePage, messageLimit }, (error: Error, result: any) => {
                 if (error) reject(error);
                 else resolve(result);
             });

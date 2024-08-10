@@ -56,7 +56,7 @@ type Conversation {
     id: ID!
     name: String
     members: [User!]!
-    messages(page: Int, limit: Int): [Message!]!
+    messages(messagePage: Int, messageLimit: Int): [Message!]!
     type: String! # ConversationType
     createdBy: ConversationCreator!
     createdAt: DateTime!
@@ -76,7 +76,7 @@ type Query {
     status: HealthCheckStatus!
     user(id: String!): User!
     users(searchTerm: String!): [User!]!
-    conversation(id: String!): Conversation!
+    conversation(id: String!, messagePage: Int, messageLimit: Int): Conversation!
     conversations(page: Int, limit: Int, messageLimit: Int): [Conversation!]!
 }
 
