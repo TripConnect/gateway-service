@@ -71,7 +71,7 @@ chatNamespace.on("connection", async (socket) => {
                 createdAt: rpcMessage.createdAt,
             }
             logger.debug({message: "New chat message", payload: chatPayload});
-            chatNamespace.to(conversationId).emit("message", chatPayload);
+            socket.to(conversationId).emit("message", chatPayload);
         } catch (error: any) {
             console.error(error);
             logger.error(error.message);
