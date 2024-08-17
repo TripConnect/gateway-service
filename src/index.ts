@@ -59,7 +59,7 @@ chatNamespace.on("connection", async (socket) => {
         socket.join(conversation.id);
     }
 
-    socket.on("message", async (event) => {
+    socket.on("message", async (event, callback: Function) => {
         try {
             let { conversationId, content } = event;
             let rpcMessage = await ChatService.createChatMessage({ conversationId, messageContent: content, fromUserId: socket.data.userId });
@@ -72,6 +72,7 @@ chatNamespace.on("connection", async (socket) => {
             }
             logger.debug({message: "New chat message", payload: chatPayload});
             socket.to(conversationId).emit("message", chatPayload);
+            callback({ status: 'DONE' });
         } catch (error: any) {
             console.error(error);
             logger.error(error.message);
