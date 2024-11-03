@@ -11,7 +11,6 @@ import logger from "../../utils/logging";
 import Conversations from "../../mongo/models/conversations";
 import Messages from "../../mongo/models/messages";
 import { StatusCode } from "../../utils/graphql";
-import { log } from "console";
 import { finished } from "stream/promises";
 import Trip from "../../database/models/trip";
 import UserService from "../grpc/userService";
@@ -31,22 +30,6 @@ const resolvers = {
             let data = await UserService.findUser({ userId: user_id });
             return data;
         },
-        // loadTripMembers: async (
-        //     _: any,
-        //     { trip_id }: { trip_id: number },
-        //     { token }: { token: string }
-        // ) => {
-        //     let { user_id } = jwt.verify(token, process.env.SECRET_KEY || "") as { user_id: string };
-        //     if (!TripUserList.findOne({ where: { trip_id, user_id } })) {
-        //         throw new GraphQLError("Cannot get trip members", {
-        //             extensions: {
-        //                 code: 'FORBIDDEN',
-        //             }
-        //         });
-        //     }
-        //     let tripMembers = await TripUserList.findAll({ where: { trip_id } });
-        //     return tripMembers.map((member: { [key: string]: any; }) => ({ trip_id: member.trip_id, user_id: member.user_id }));
-        // },
         users: async (
             _: any,
             { searchTerm }: { searchTerm: string },
@@ -63,7 +46,8 @@ const resolvers = {
             let result = [];
             let rpcConversations = await ChatService.searchConversations({ memberIds: [currentUserId], page, limit, messageLimit });
             for (let conversation of rpcConversations.conversations) {
-                let rpcMembers = await UserService.searchUser({ userIds: conversation.memberIds });
+                let rpcMembers = await UserService.getUsers({ userIds: conversation.memberIds });
+
                 result.push({
                     id: conversation.id,
                     name: conversation.name,
@@ -80,6 +64,7 @@ const resolvers = {
                     }),
                 });
             }
+
             return result;
         },
         conversation: async (
@@ -89,7 +74,7 @@ const resolvers = {
         ) => {
             try {
                 let rpcConversation = await ChatService.findConversation({ conversationId: id });
-                
+
                 let responseConversation = {
                     ...rpcConversation,
                 };
@@ -117,19 +102,23 @@ const resolvers = {
         members: async (
             conversation: any,
         ) => {
-            let rpcMembers = await UserService.searchUser({ userIds: conversation.memberIds });
+            if (conversation.members) return conversation.members;
+            let rpcMembers = await UserService.getUsers({ userIds: conversation.memberIds });
             return rpcMembers.users;
         },
         messages: async (
             conversation: any,
             { messagePage, messageLimit }: { messagePage: number, messageLimit: number },
         ) => {
-            logger.debug({ messagePage, messageLimit });
-            let rpcConversation = await ChatService.findConversation({ conversationId: conversation.id, messagePage: messagePage, messageLimit: messageLimit });
+            let rpcConversation = await ChatService.findConversation({
+                conversationId: conversation.id,
+                messagePage: messagePage,
+                messageLimit: messageLimit
+            });
 
-            let senderIds: string[] = Array.from(new Set(rpcConversation.messages.map((m: any) => m.fromUserId )));
-            let rpcSenders = await UserService.searchUser({ userIds: senderIds});
-            
+            let senderIds: string[] = Array.from(new Set(rpcConversation.messages.map((m: any) => m.fromUserId)));
+            let rpcSenders = await UserService.getUsers({ userIds: senderIds });
+
             let messages = rpcConversation.messages.map((message: any) => {
                 return {
                     ...message,
@@ -232,7 +221,7 @@ const resolvers = {
             // Note: The new private conversation will not created if that is exist already
             try {
                 let memberIds = members.split(",");
-                let membersInfo = await UserService.searchUser({ userIds: memberIds });
+                let membersInfo = await UserService.getUsers({ userIds: memberIds });
 
                 if (membersInfo.users.length !== memberIds.length) {
                     throw new GraphQLError("Member not found", {

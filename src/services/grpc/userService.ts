@@ -1,5 +1,4 @@
 import ServiceBase from "./serviceBase";
-import { StatusCode } from "../../utils/graphql";
 
 let grpc = require('@grpc/grpc-js');
 
@@ -40,9 +39,19 @@ export default class UserService extends ServiceBase {
     }
 
     public static async searchUser(
-        { term = null, userIds = null }: { term?: string | null, userIds?: string[] | null }): Promise<any> {
+        { term = '' }: { term?: string }): Promise<any> {
         return new Promise((resolve, reject) => {
-            UserService.stub.SearchUser({ term, userIds }, (error: any, result: any) => {
+            UserService.stub.SearchUser({ term }, (error: any, result: any) => {
+                if (error) reject(error);
+                else resolve(result);
+            });
+        });
+    }
+
+    public static async getUsers(
+        { userIds }: { userIds: string[] }): Promise<any> {
+        return new Promise((resolve, reject) => {
+            UserService.stub.GetUsers({ userIds }, (error: any, result: any) => {
                 if (error) reject(error);
                 else resolve(result);
             });
