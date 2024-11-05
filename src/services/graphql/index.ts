@@ -5,16 +5,13 @@ const { ApolloServerPluginLandingPageLocalDefault } = require('apollo-server-cor
 import resolvers from "./resolvers";
 const typeDefs = readFileSync(__dirname + '/schema.graphql', { encoding: 'utf-8' });
 
-interface CustomContext {
-    token?: String;
-}
-
-const gqlServer = new ApolloServer<CustomContext>({
+const gqlServer = new ApolloServer({
     typeDefs,
     resolvers,
     csrfPrevention: true,
     cache: 'bounded',
     plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+    includeStacktraceInErrorResponses: false, // Set to true for debugging
 });
 
 export default gqlServer;

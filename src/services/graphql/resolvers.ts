@@ -1,21 +1,15 @@
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
-import { GraphQLError } from 'graphql';
-import { QueryTypes, Op } from "sequelize";
 let grpc = require('@grpc/grpc-js');
-
-import User from "../../database/models/user";
-import UserCredential from "../../database/models/user_credential";
-import logger from "../../utils/logging";
-import Conversations from "../../mongo/models/conversations";
-import Messages from "../../mongo/models/messages";
-import { StatusCode } from "../../utils/graphql";
+const { GraphQLUpload } = require('graphql-upload-ts');
+import { GraphQLError } from 'graphql';
+import { v4 as uuidv4 } from 'uuid';
 import { finished } from "stream/promises";
-import Trip from "../../database/models/trip";
+
 import UserService from "../grpc/userService";
 import ChatService from "../grpc/chatService";
-const { GraphQLUpload } = require('graphql-upload-ts');
+import { AuthenticatedRequest } from './middlewares';
+import Trip from "../../database/models/trip";
+import logger from "../../utils/logging";
+import { StatusCode } from "../../utils/graphql";
 
 const resolvers = {
     Upload: GraphQLUpload,
@@ -33,15 +27,15 @@ const resolvers = {
         users: async (
             _: any,
             { searchTerm }: { searchTerm: string },
-            { token, currentUserId }: { token: string, currentUserId: string }
+            { currentUserId }: { currentUserId: string }
         ) => {
             let data = await UserService.searchUser({ term: searchTerm });
             return data.users;
         },
-        conversations: async (
+        conversations: AuthenticatedRequest(async (
             _: any,
             { page = 1, limit = 100, messageLimit = 10 }: { page: number, limit: number, messageLimit: number },
-            { token, currentUserId }: { token: string, currentUserId: string }
+            { currentUserId }: { currentUserId: string }
         ) => {
             let result = [];
             let rpcConversations = await ChatService.searchConversations({ memberIds: [currentUserId], page, limit, messageLimit });
@@ -66,11 +60,11 @@ const resolvers = {
             }
 
             return result;
-        },
+        }),
         conversation: async (
             _: any,
             { id, messagePage = 1, messageLimit = 1 }: { id: string, messagePage: number, messageLimit: number },
-            { token }: { token: string }
+            { currentUserId }: { currentUserId: string }
         ) => {
             try {
                 let rpcConversation = await ChatService.findConversation({ conversationId: id });
@@ -191,7 +185,7 @@ const resolvers = {
         createTrip: async (
             _: any,
             { name, description }: { name: string, description: string },
-            { token, currentUserId }: { token: string, currentUserId: string }
+            { currentUserId }: { currentUserId: string }
         ) => {
             let trip = await Trip.create({
                 id: uuidv4(),
@@ -216,7 +210,7 @@ const resolvers = {
         createConversation: async (
             _: any,
             { type, name, members }: { type: string, name: string, members: string },
-            { token, currentUserId }: { token: string, currentUserId: string }
+            { currentUserId }: { currentUserId: string }
         ) => {
             // Note: The new private conversation will not created if that is exist already
             try {
