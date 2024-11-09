@@ -19,9 +19,9 @@ const resolvers = {
         },
         user: async (
             _: any,
-            { user_id }: { user_id: string }
+            { id }: { id: string }
         ) => {
-            let data = await UserService.findUser({ userId: user_id });
+            let data = await UserService.findUser({ userId: id });
             return data;
         },
         users: async (

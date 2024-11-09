@@ -11,7 +11,7 @@ const gqlServer = new ApolloServer({
     csrfPrevention: true,
     cache: 'bounded',
     plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
-    includeStacktraceInErrorResponses: false, // Set to true for debugging
+    includeStacktraceInErrorResponses: true, // Set to true for debugging
 });
 
 export default gqlServer;
