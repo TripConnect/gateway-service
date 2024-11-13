@@ -10,7 +10,6 @@ const path = require('path');
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
 import morgan from 'morgan';
-import { connect } from "mongoose";
 import { graphqlUploadExpress } from 'graphql-upload-ts';
 import { instrument } from "@socket.io/admin-ui";
 
@@ -33,8 +32,6 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }))
-
-connect(process.env.MONGODB_CONNECTION_STRING as string);
 
 chatNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;

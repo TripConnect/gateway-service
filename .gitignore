@@ -1,6 +1,4 @@
 node_modules
-src/database/data
-*.sqlite
 .env
 log
 .vscode

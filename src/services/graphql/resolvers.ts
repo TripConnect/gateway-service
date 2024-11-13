@@ -7,7 +7,6 @@ import { finished } from "stream/promises";
 import UserService from "../grpc/userService";
 import ChatService from "../grpc/chatService";
 import { AuthenticatedRequest } from './middlewares';
-import Trip from "../../database/models/trip";
 import logger from "../../utils/logging";
 import { StatusCode } from "../../utils/graphql";
 
@@ -180,31 +179,6 @@ const resolvers = {
                         });
                 }
             }
-        },
-
-        createTrip: async (
-            _: any,
-            { name, description }: { name: string, description: string },
-            { currentUserId }: { currentUserId: string }
-        ) => {
-            let trip = await Trip.create({
-                id: uuidv4(),
-                name,
-                description,
-                created_at: new Date(),
-                created_by: currentUserId,
-            });
-            return {
-                id: trip.id,
-                name: trip.name,
-                description: trip.description,
-                createdBy: {
-                    id: currentUserId,
-                },
-                members: [],
-                points: [],
-                createdAt: trip.createdAt,
-            };
         },
 
         createConversation: async (
