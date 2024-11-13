@@ -5,6 +5,7 @@
   "main": "application.ts",
   "scripts": {
     "build": "tsc",
+    "migrate:gen": "npx sequelize-cli model:generate --name Data --attributes name:string",
     "migrate:up": "npx sequelize-cli db:migrate",
     "migrate:down": "npx sequelize-cli db:migrate:undo",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all",
@@ -50,6 +51,7 @@
     "dotenv": "^16.3.1",
     "google-protobuf": "^3.0.0",
     "graphql": "^16.6.0",
+    "graphql-depth-limit": "^1.1.0",
     "graphql-upload-ts": "^2.1.2",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.6.1",
