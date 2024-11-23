@@ -1,3 +1,4 @@
+scalar Void
 scalar DateTime
 scalar Upload
 
@@ -71,6 +72,10 @@ type Message {
     createdAt: DateTime!
 }
 
+type TwoFASetting {
+    secret: String!
+    qrCode: String!
+}
 
 type Query {
     status: HealthCheckStatus!
@@ -85,4 +90,6 @@ type Mutation {
     signup(username: String!, password: String!, displayName: String!, avatar: Upload): AuthPayload!
     createConversation(name: String, type: String!, members: String!): Conversation!
     createTrip(name: String!, description: String!): Trip!
+    generate2FASecret: TwoFASetting!
+    enable2FA(secret: String!, otp: String!): Void!
 }

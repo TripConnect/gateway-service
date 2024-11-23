@@ -44,7 +44,7 @@ export default class UserService extends ServiceBase {
     }
 
     public static async findUser(
-        { userId }: { userId: string }): Promise<any> {
+        { userId }: { userId: string }): Promise<UserInfo> {
         return new Promise((resolve, reject) => {
             UserService.stub.FindUser({ userId }, (error: any, result: UserInfo) => {
                 if (error) reject(error);

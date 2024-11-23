@@ -9,6 +9,7 @@ import ChatService from "../grpc/chatService";
 import { AuthenticatedRequest } from './middlewares';
 import logger from "../../utils/logging";
 import { StatusCode } from "../../utils/graphql";
+import TwofaService from '../grpc/twofaService';
 
 const resolvers = {
     Upload: GraphQLUpload,
@@ -229,6 +230,37 @@ const resolvers = {
                 }
             }
         },
+
+        generate2FASecret: async (
+            _: any,
+            { secret, otp }: { secret: string, otp: string },
+            { currentUserId }: { currentUserId: string }
+        ) => {
+            try {
+                let user = await UserService.findUser({ userId: currentUserId });
+                let setting = await TwofaService.generate2FASecret({ label: user.username });
+                return setting;
+            } catch (error: any) {
+                logger.error(error.message);
+                throw new GraphQLError("Something went wrong", {
+                    extensions: {
+                        code: StatusCode.INTERNAL_SERVER_ERROR,
+                    }
+                });
+            }
+        },
+
+        enable2FA: async (
+            _: any,
+            { secret, otp }: { secret: string, otp: string },
+            { currentUserId }: { currentUserId: string }
+        ) => {
+            try {
+                return { success: true };
+            } catch (error) {
+                return { success: false };
+            }
+        }
     },
 };
 
