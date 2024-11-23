@@ -25,7 +25,7 @@ const io = new Server(server, {
     }
 });
 
-const PORT = process.env.PORT || 3107;
+const PORT = process.env.PORT || 31071;
 const chatNamespace = io.of('/chat');
 const accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), { flags: 'a' });
 
@@ -44,9 +44,9 @@ chatNamespace.on("connection", async (socket) => {
     socket.data.userId = userId;
     console.info({ message: "Chat socket connected", userId });
 
-    let rpcConversations = await ChatService.searchConversations({ memberIds: [userId] });
+    let conversations = await ChatService.searchConversations({ memberIds: [userId] });
 
-    for (let conversation of rpcConversations.conversations) {
+    for (let conversation of conversations) {
         logger.debug({
             message: "Join conversation",
             userId: socket.data.userId,

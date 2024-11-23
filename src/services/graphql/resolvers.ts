@@ -4,7 +4,7 @@ import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { finished } from "stream/promises";
 
-import UserService from "../grpc/userService";
+import UserService, { UserInfo } from "../grpc/userService";
 import ChatService from "../grpc/chatService";
 import { AuthenticatedRequest } from './middlewares';
 import logger from "../../utils/logging";
@@ -28,8 +28,8 @@ const resolvers = {
             { searchTerm }: { searchTerm: string },
             { currentUserId }: { currentUserId: string }
         ) => {
-            let data = await UserService.searchUser({ term: searchTerm });
-            return data.users;
+            let users = await UserService.searchUser({ term: searchTerm });
+            return users;
         },
         conversations: AuthenticatedRequest(async (
             _: any,
@@ -37,22 +37,22 @@ const resolvers = {
             { currentUserId }: { currentUserId: string }
         ) => {
             let result = [];
-            let rpcConversations = await ChatService.searchConversations({ memberIds: [currentUserId], page, limit, messageLimit });
-            for (let conversation of rpcConversations.conversations) {
-                let rpcMembers = await UserService.getUsers({ userIds: conversation.memberIds });
+            let conversations = await ChatService.searchConversations({ memberIds: [currentUserId], page, limit, messageLimit });
+            for (let conversation of conversations) {
+                let members = await UserService.getUsers({ userIds: conversation.memberIds });
 
                 result.push({
                     id: conversation.id,
                     name: conversation.name,
                     type: conversation.type,
                     createdBy: null,
-                    createdAt: conversation?.createdAt,
+                    createdAt: conversation.createdAt,
                     lastMessageAt: null,
-                    members: rpcMembers.users,
-                    messages: conversation.messages.map((m: any) => {
+                    members: members,
+                    messages: conversation.messages.map(message => {
                         return {
-                            ...m,
-                            fromUser: rpcMembers.users.find((rpcUser: any) => rpcUser.id === m.fromUserId),
+                            ...message,
+                            fromUser: members.find(member => member.id === message.fromUserId),
                         }
                     }),
                 });
@@ -96,8 +96,8 @@ const resolvers = {
             conversation: any,
         ) => {
             if (conversation.members) return conversation.members;
-            let rpcMembers = await UserService.getUsers({ userIds: conversation.memberIds });
-            return rpcMembers.users;
+            let users = await UserService.getUsers({ userIds: conversation.memberIds });
+            return users;
         },
         messages: async (
             conversation: any,
@@ -110,12 +110,12 @@ const resolvers = {
             });
 
             let senderIds: string[] = Array.from(new Set(rpcConversation.messages.map((m: any) => m.fromUserId)));
-            let rpcSenders = await UserService.getUsers({ userIds: senderIds });
+            let senders = await UserService.getUsers({ userIds: senderIds });
 
             let messages = rpcConversation.messages.map((message: any) => {
                 return {
                     ...message,
-                    fromUser: rpcSenders.users.find((user: any) => user.id === message.fromUserId)
+                    fromUser: senders.find((user) => user.id === message.fromUserId)
                 }
             });
             return messages;
@@ -191,7 +191,7 @@ const resolvers = {
                 let memberIds = members.split(",");
                 let membersInfo = await UserService.getUsers({ userIds: memberIds });
 
-                if (membersInfo.users.length !== memberIds.length) {
+                if (membersInfo.length !== memberIds.length) {
                     throw new GraphQLError("Member not found", {
                         extensions: {
                             code: StatusCode.NOT_FOUND,
@@ -208,7 +208,7 @@ const resolvers = {
 
                 return {
                     ...data,
-                    members: membersInfo.users,
+                    members: membersInfo,
                 };
             } catch (error: any) {
                 if (error instanceof GraphQLError) throw error;
