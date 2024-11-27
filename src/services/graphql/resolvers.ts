@@ -256,9 +256,34 @@ const resolvers = {
             { currentUserId }: { currentUserId: string }
         ) => {
             try {
-                return { success: true };
-            } catch (error) {
-                return { success: false };
+                if (!new RegExp("^[0-9]{6}$").test(otp)) {
+                    return new GraphQLError("Invalid OTP", {
+                        extensions: {
+                            code: StatusCode.BAD_REQUEST,
+                        }
+                    });
+                }
+                let user = await UserService.findUser({ userId: currentUserId });
+                await TwofaService.enable2FA({ resourceId: user.id, secret, otp, label: user.username });
+                return {
+                    success: true
+                };
+            } catch (error: any) {
+                logger.error(error.message);
+                switch (error.code) {
+                    case grpc.status.INVALID_ARGUMENT:
+                        throw new GraphQLError("Bad request", {
+                            extensions: {
+                                code: StatusCode.BAD_REQUEST,
+                            }
+                        });
+                    default:
+                        throw new GraphQLError("Something went wrong", {
+                            extensions: {
+                                code: StatusCode.INTERNAL_SERVER_ERROR,
+                            }
+                        });
+                }
             }
         }
     },

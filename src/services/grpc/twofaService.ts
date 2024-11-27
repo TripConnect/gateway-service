@@ -22,9 +22,9 @@ export default class TwofaService extends ServiceBase {
     }
 
     public static async enable2FA(
-        { secret, label, otp }: { secret: string, otp: string, label: string }): Promise<void> {
+        { resourceId, secret, label, otp }: { resourceId: string, secret: string, otp: string, label: string }): Promise<void> {
         return new Promise((resolve, reject) => {
-            TwofaService.stub.CreateSetting({ secret, label, otp }, (error: any, result: any) => {
+            TwofaService.stub.CreateSetting({ resourceId, secret, label, otp }, (error: any, result: any) => {
                 if (error) reject(error);
                 else resolve();
             });

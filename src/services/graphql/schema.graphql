@@ -1,6 +1,9 @@
-scalar Void
 scalar DateTime
 scalar Upload
+
+type ResponseModel {
+    success: Boolean!
+}
 
 type File {
     filename: String!
@@ -91,5 +94,5 @@ type Mutation {
     createConversation(name: String, type: String!, members: String!): Conversation!
     createTrip(name: String!, description: String!): Trip!
     generate2FASecret: TwoFASetting!
-    enable2FA(secret: String!, otp: String!): Void!
+    enable2FA(secret: String!, otp: String!): ResponseModel!
 }
