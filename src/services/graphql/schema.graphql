@@ -1,9 +1,42 @@
 scalar DateTime
 scalar Upload
 
-type ResponseModel {
+interface IUser {
+    id: ID!
+    avatar: String
+    displayName: String!
+}
+
+interface ResponseModel {
     success: Boolean!
 }
+
+interface PaginationModel {
+    success: Boolean!
+    totalElements: Int!
+}
+
+type User implements IUser {
+    id: ID!
+    avatar: String
+    displayName: String!
+}
+
+type Self implements IUser {
+    id: ID!
+    avatar: String
+    displayName: String!
+    username: String!
+    enabled2fa: Boolean!
+}
+
+enum ConversationType {
+    PRIVATE
+    GROUP
+    TRIP
+}
+
+union ConversationCreator = User | Trip
 
 type File {
     filename: String!
@@ -18,13 +51,6 @@ type HealthCheckStatus {
 type Token {
     accessToken: String!
     refreshToken: String!
-}
-
-type User {
-    id: ID!
-    avatar: String
-    username: String!
-    displayName: String!
 }
 
 type AuthPayload {
@@ -47,14 +73,6 @@ type TripPoint {
     note: String
     arrivedAt: DateTime!
 }
-
-enum ConversationType {
-  PRIVATE
-  GROUP
-  TRIP
-}
-
-union ConversationCreator = User | Trip
 
 type Conversation {
     id: ID!
@@ -82,6 +100,7 @@ type TwoFASetting {
 
 type Query {
     status: HealthCheckStatus!
+    me: Self!
     user(id: String!): User!
     users(searchTerm: String!): [User!]!
     conversation(id: String!, messagePage: Int, messageLimit: Int): Conversation!
