@@ -1,16 +1,15 @@
-FROM node:18.16.1
+FROM node:20.18.1
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-ADD . .
+COPY package*.json ./
 
 RUN npm install
 
-EXPOSE 3107
+COPY . .
 
-# development setup
-ENTRYPOINT ["sh", "-c", "npm run setup && npm run dev" ]
+RUN npm run build
 
-# production setup
-# CMD npm run migrate:up
-# ENTRYPOINT [ "npm", "start" ]
+CMD ["node", "dist/index.js"]
+
+EXPOSE 31072
