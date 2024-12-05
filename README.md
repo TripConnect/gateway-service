@@ -1,32 +1,18 @@
-# Showcase setup
+# Introduction
+The gateway service, entry point of backend services
 
-## Environment variables
-```
-JWT_SECRET_KEY=shhhhh
-MONGODB_CONNECTION_STRING=mongodb://admin:admin@localhost:27017/local?authSource=admin
-DATEBASE_ADDRESS=127.0.0.1
-DATEBASE_USERNAME=service
-DATEBASE_PASSWORD=service
-DATEBASE_NAME=TripConnect
-```
-
-## Using Docker Compose
+# Setup
+## Development
+### Infrastructure
+Starting up system infrastructure
 ```sh
-cd TripConnect
-npm install
-docker-compose tools/docker/docker-compose.yml
-npm run dev
+cd infra-specs # Clone if not already
+docker-compose -f k8s/local/docker-compose.yml up --force-recreate # Create up all system infrastructures
 ```
-
-## Using Kubernetes
+### Service
+Starting up the `user-service`
 ```sh
-cd TripConnect
-# Build tripconnect image
-docker build -t tripconnect:development .
-# Apply k8s manifest
-kubectl apply -f tools/k8s/development-setup.yml
-```
-```sh
-kubectl get pods
-kubectl exec -it <application-pod> -- sh
+cd gateway-service
+npm install # Install libraries
+npm start # Start the service
 ```
