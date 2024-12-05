@@ -10,6 +10,6 @@ COPY . .
 
 RUN npm run build
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/application.js"]
 
 EXPOSE 31072
