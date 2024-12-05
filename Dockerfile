@@ -10,6 +10,8 @@ COPY . .
 
 RUN npm run build
 
+COPY ./src/services/graphql/schema.graphql dist/services/graphql/schema.graphql
+
 CMD ["node", "dist/application.js"]
 
 EXPOSE 31072
