@@ -5,13 +5,7 @@
   "main": "application.ts",
   "scripts": {
     "build": "tsc",
-    "migrate:gen": "npx sequelize-cli model:generate --name Data --attributes name:string",
-    "migrate:up": "npx sequelize-cli db:migrate",
-    "migrate:down": "npx sequelize-cli db:migrate:undo",
-    "migrate:reset": "npx sequelize-cli db:migrate:undo:all",
-    "seed:up": "npx sequelize-cli db:seed:all",
-    "seed:reset": "npx sequelize-cli db:seed:undo:all",
-    "setup": "npm run migrate:reset && npm run migrate:up && npm run seed:up",
+    "docker:build": "docker build -t gateway-service:latest .",
     "start": "nodemon --exec ts-node src/application.ts",
     "dev": "nodemon --exec ts-node src/application.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
