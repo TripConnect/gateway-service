@@ -2,7 +2,7 @@
 
 ## Environment variables
 ```
-SECRET_KEY=shhhhh
+JWT_SECRET_KEY=shhhhh
 MONGODB_CONNECTION_STRING=mongodb://admin:admin@localhost:27017/local?authSource=admin
 DATEBASE_ADDRESS=127.0.0.1
 DATEBASE_USERNAME=service

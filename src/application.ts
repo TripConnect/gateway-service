@@ -25,7 +25,7 @@ const io = new Server(server, {
     }
 });
 
-const PORT = process.env.PORT || 31071;
+const PORT = process.env.GATEWAY_SERVICE_PORT || 31071;
 const chatNamespace = io.of('/chat');
 const accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), { flags: 'a' });
 
@@ -40,7 +40,7 @@ chatNamespace.on("connection", async (socket) => {
         logger.warn({ "message": "Reject socketio connection" })
         return;
     }
-    let { userId } = jwt.verify(token, process.env.SECRET_KEY || "") as { userId: string };
+    let { userId } = jwt.verify(token, process.env.JWT_SECRET_KEY || "") as { userId: string };
     socket.data.userId = userId;
     console.info({ message: "Chat socket connected", userId });
 
@@ -91,7 +91,7 @@ gqlServer
                 let accessToken = req.headers.authorization?.split(" ")[1] as string;
                 let currentUserId: string | null = null;
                 if (accessToken) {
-                    let encoded = jwt.verify(accessToken, process.env.SECRET_KEY || "") as { userId: string };
+                    let encoded = jwt.verify(accessToken, process.env.JWT_SECRET_KEY || "") as { userId: string };
                     currentUserId = encoded.userId;
                 }
                 return {
