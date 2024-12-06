@@ -21,7 +21,8 @@ export type AuthPayload = {
 
 export default class UserService extends ServiceBase {
     private static stub = new super.backendProto.User(
-        process.env.ROUTE_USER_SERVICE, grpc.credentials.createInsecure());
+        process.env.ROUTE_USER_SERVICE || 'localhost:31072',
+        grpc.credentials.createInsecure());
 
     public static async signin(
         { username, password }: { username: string, password: string }): Promise<AuthPayload> {

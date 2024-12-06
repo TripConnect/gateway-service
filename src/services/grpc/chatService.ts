@@ -26,7 +26,8 @@ export type Conversation = {
 
 export default class ChatService extends ServiceBase {
     private static stub = new super.backendProto.Chat(
-        process.env.ROUTE_CHAT_SERVICE, grpc.credentials.createInsecure());
+        process.env.ROUTE_CHAT_SERVICE || 'localhost:31073',
+        grpc.credentials.createInsecure());
 
     public static async createConversation(
         { ownerId, name, type, memberIds }: { ownerId: string, name: string, type: string, memberIds: string[] }): Promise<Conversation> {

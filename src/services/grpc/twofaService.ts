@@ -9,7 +9,8 @@ export type Generate2FAResponse = {
 
 export default class TwofaService extends ServiceBase {
     private static stub = new super.backendProto.TwoFA(
-        process.env.ROUTE_TWOFA_SERVICE, grpc.credentials.createInsecure());
+        process.env.ROUTE_TWOFA_SERVICE || 'localhost:31074',
+        grpc.credentials.createInsecure());
 
     public static async generate2FASecret(
         { label }: { label: string }): Promise<Generate2FAResponse> {
