@@ -1,0 +1,117 @@
+scalar DateTime
+scalar Upload
+
+interface IUser {
+    id: ID!
+    avatar: String
+    displayName: String!
+}
+
+interface ResponseModel {
+    success: Boolean!
+}
+
+interface PaginationModel {
+    success: Boolean!
+    totalElements: Int!
+}
+
+type User implements IUser {
+    id: ID!
+    avatar: String
+    displayName: String!
+}
+
+type Self implements IUser {
+    id: ID!
+    avatar: String
+    displayName: String!
+    username: String!
+    enabled2fa: Boolean!
+}
+
+enum ConversationType {
+    PRIVATE
+    GROUP
+    TRIP
+}
+
+union ConversationCreator = User | Trip
+
+type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+}
+
+type HealthCheckStatus {
+    status: Boolean!
+}
+
+type Token {
+    accessToken: String!
+    refreshToken: String!
+}
+
+type AuthPayload {
+    userInfo: User!
+    token: Token!
+}
+
+type Trip {
+    id: ID!
+    name: String!
+    description: String!
+    createdBy: User!
+    members: [User!]!
+    points: [TripPoint!]!
+    createdAt: DateTime!
+}
+
+type TripPoint {
+    name: String!
+    note: String
+    arrivedAt: DateTime!
+}
+
+type Conversation {
+    id: ID!
+    name: String
+    members: [User!]!
+    messages(messagePage: Int, messageLimit: Int): [Message!]!
+    type: String! # ConversationType
+    createdBy: ConversationCreator!
+    createdAt: DateTime!
+    lastMessageAt: DateTime
+}
+
+type Message {
+    id: ID!
+    conversation: Conversation!
+    fromUser: User!
+    messageContent: String!
+    createdAt: DateTime!
+}
+
+type TwoFASetting {
+    secret: String!
+    qrCode: String!
+}
+
+type Query {
+    status: HealthCheckStatus!
+    me: Self!
+    user(id: String!): User!
+    users(searchTerm: String!): [User!]!
+    conversation(id: String!, messagePage: Int, messageLimit: Int): Conversation!
+    conversations(page: Int, limit: Int, messageLimit: Int): [Conversation!]!
+}
+
+type Mutation {
+    signin(username: String!, password: String!): AuthPayload!
+    signup(username: String!, password: String!, displayName: String!, avatar: Upload): AuthPayload!
+    createConversation(name: String, type: String!, members: String!): Conversation!
+    createTrip(name: String!, description: String!): Trip!
+    generate2FASecret: TwoFASetting!
+    enable2FA(secret: String!, otp: String!): ResponseModel!
+}
