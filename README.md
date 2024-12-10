@@ -2,7 +2,7 @@
 The gateway service, entry point of backend services
 
 # Setup
-## Development
+## Local lab
 ### Infrastructure
 Starting up system infrastructure
 ```sh

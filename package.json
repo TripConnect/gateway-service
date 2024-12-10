@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "docker:build": "docker build -t gateway-service:latest .",
+    "docker:run": "docker run --name gateway-service -p 31071:31071 gateway-service:latest",
     "start": "nodemon --exec ts-node src/application.ts",
     "dev": "nodemon --exec ts-node src/application.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
