@@ -26,7 +26,6 @@ type Self implements IUser {
     id: ID!
     avatar: String
     displayName: String!
-    username: String!
     enabled2fa: Boolean!
 }
 

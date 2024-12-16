@@ -17,6 +17,14 @@ const resolvers = {
         status: async () => {
             return { status: true };
         },
+        me: async (
+            _: any,
+            params: {},
+            { currentUserId }: { currentUserId: string }
+        ) => {
+            let currentUser = await UserService.findUser({ userId: currentUserId });
+            return currentUser;
+        },
         user: async (
             _: any,
             { id }: { id: string }
@@ -238,7 +246,7 @@ const resolvers = {
         ) => {
             try {
                 let user = await UserService.findUser({ userId: currentUserId });
-                let setting = await TwofaService.generate2FASecret({ label: user.username });
+                let setting = await TwofaService.generate2FASecret({ label: user.displayName });
                 return setting;
             } catch (error: any) {
                 logger.error(error.message);
@@ -264,7 +272,7 @@ const resolvers = {
                     });
                 }
                 let user = await UserService.findUser({ userId: currentUserId });
-                await TwofaService.enable2FA({ resourceId: user.id, secret, otp, label: user.username });
+                await TwofaService.enable2FA({ resourceId: user.id, secret, otp, label: user.displayName });
                 return {
                     success: true
                 };

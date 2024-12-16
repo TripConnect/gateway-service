@@ -8,10 +8,12 @@ export type Token = {
 }
 
 export type UserInfo = {
+    // public area
     id: string;
     avatar: string | null;
-    username: string;
     displayName: string;
+    // private area
+    enabled2fa: boolean;
 }
 
 export type AuthPayload = {
