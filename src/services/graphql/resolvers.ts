@@ -133,13 +133,22 @@ const resolvers = {
     Mutation: {
         signin: async (
             _: any,
-            { username, password }: { username: string, password: string },
+            { username, password, otp = '' }: { username: string, password: string, otp?: string },
         ) => {
             try {
-                let response = await UserService.signin({ username, password });
-                return response;
-            } catch (err: any) {
-                switch (err.code) {
+                let authPayload = await UserService.signin({ username, password });
+                if (!authPayload.userInfo.enabled2fa) return authPayload;
+
+                let secondFactorResp = await TwofaService.validate2FA({ resourceId: authPayload.userInfo.id, otp });
+                if (secondFactorResp.success) return authPayload;
+
+                return new GraphQLError("Two-factor authentication required", {
+                    extensions: {
+                        code: StatusCode.MULTI_FACTOR_REQUIRED,
+                    }
+                });
+            } catch (error: any) {
+                switch (error.code) {
                     case grpc.status.INVALID_ARGUMENT:
                         throw new GraphQLError("Authorization failed", {
                             extensions: {

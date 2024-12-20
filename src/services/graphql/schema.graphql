@@ -7,13 +7,17 @@ interface IUser {
     displayName: String!
 }
 
-interface ResponseModel {
+interface IResponseModel {
     success: Boolean!
 }
 
 interface PaginationModel {
     success: Boolean!
     totalElements: Int!
+}
+
+type ResponseModel {
+    success: Boolean!
 }
 
 type User implements IUser {
@@ -53,7 +57,7 @@ type Token {
 }
 
 type AuthPayload {
-    userInfo: User!
+    userInfo: Self!
     token: Token!
 }
 
@@ -107,7 +111,7 @@ type Query {
 }
 
 type Mutation {
-    signin(username: String!, password: String!): AuthPayload!
+    signin(username: String!, password: String!, otp: String): AuthPayload!
     signup(username: String!, password: String!, displayName: String!, avatar: Upload): AuthPayload!
     createConversation(name: String, type: String!, members: String!): Conversation!
     createTrip(name: String!, description: String!): Trip!
