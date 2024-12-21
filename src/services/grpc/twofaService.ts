@@ -13,7 +13,7 @@ type Validate2FAResponse = {
 }
 
 export default class TwofaService extends ServiceBase {
-    private static stub = new super.backendProto.TwoFA(
+    private static stub = new super.backendProto.twofa_service.TwoFA(
         process.env.ROUTE_TWOFA_SERVICE || 'localhost:31074',
         grpc.credentials.createInsecure());
 

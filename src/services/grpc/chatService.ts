@@ -25,7 +25,7 @@ export type Conversation = {
 }
 
 export default class ChatService extends ServiceBase {
-    private static stub = new super.backendProto.Chat(
+    private static stub = new super.backendProto.chat_service.Chat(
         process.env.ROUTE_CHAT_SERVICE || 'localhost:31073',
         grpc.credentials.createInsecure());
 

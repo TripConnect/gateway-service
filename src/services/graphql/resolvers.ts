@@ -4,12 +4,12 @@ import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { finished } from "stream/promises";
 
-import UserService, { UserInfo } from "../grpc/userService";
+import UserService from "../grpc/userService";
 import ChatService from "../grpc/chatService";
+import TwofaService from '../grpc/twofaService';
 import { AuthenticatedRequest } from './middlewares';
 import logger from "../../utils/logging";
 import { StatusCode } from "../../utils/graphql";
-import TwofaService from '../grpc/twofaService';
 
 const resolvers = {
     Upload: GraphQLUpload,
