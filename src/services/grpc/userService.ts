@@ -1,5 +1,6 @@
 const grpc = require('@grpc/grpc-js');
-import ServiceBase from "./serviceBase";
+
+import { backendProto } from 'common-utils';
 
 export type GrpcToken = {
     access_token: string;
@@ -39,8 +40,8 @@ export type AuthPayload = {
     token: Token;
 }
 
-export default class UserService extends ServiceBase {
-    private static stub = new super.backendProto.user_service.User(
+export default class UserService {
+    private static stub = new backendProto.user_service.User(
         process.env.ROUTE_USER_SERVICE || 'localhost:31072',
         grpc.credentials.createInsecure());
 

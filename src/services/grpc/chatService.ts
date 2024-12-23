@@ -1,6 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 
-import ServiceBase from "./serviceBase";
+import { backendProto } from 'common-utils';
 
 export enum ConversationType {
     PRIVATE = 'PRIVATE',
@@ -24,8 +24,8 @@ export type Conversation = {
     createdAt: Date;
 }
 
-export default class ChatService extends ServiceBase {
-    private static stub = new super.backendProto.chat_service.Chat(
+export default class ChatService {
+    private static stub = new backendProto.chat_service.Chat(
         process.env.ROUTE_CHAT_SERVICE || 'localhost:31073',
         grpc.credentials.createInsecure());
 

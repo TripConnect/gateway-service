@@ -1,6 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 
-import ServiceBase from "./serviceBase";
+import { backendProto } from 'common-utils';
 
 export type Generate2FAResponse = {
     secret: string;
@@ -12,8 +12,8 @@ type Validate2FAResponse = {
     status: 'INVALID' | 'VALID';
 }
 
-export default class TwofaService extends ServiceBase {
-    private static stub = new super.backendProto.twofa_service.TwoFA(
+export default class TwofaService {
+    private static stub = new backendProto.twofa_service.TwoFA(
         process.env.ROUTE_TWOFA_SERVICE || 'localhost:31074',
         grpc.credentials.createInsecure());
 
