@@ -25,7 +25,7 @@ export type Conversation = {
 }
 
 export default class ChatService {
-    private static stub = new backendProto.chat_service.Chat(
+    private static stub = new backendProto.chat_service.ChatService(
         process.env.ROUTE_CHAT_SERVICE || 'localhost:31073',
         grpc.credentials.createInsecure());
 
@@ -39,10 +39,23 @@ export default class ChatService {
         });
     }
 
-    public static async searchConversations(
-        { type = ConversationType.PRIVATE, memberIds = [] as string[], term = "", page = 1, limit = 50, messageLimit = 10 }): Promise<Conversation[]> {
+    public static async searchConversations({
+        type = ConversationType.PRIVATE,
+        memberIds = [] as string[],
+        term = "",
+        page = 1,
+        limit = 50,
+        messageLimit = 10
+    }): Promise<Conversation[]> {
         return new Promise((resolve, reject) => {
-            ChatService.stub.SearchConversations({ type, memberIds, term, page, limit, messageLimit }, (error: Error, result: { conversations: Conversation[] }) => {
+            ChatService.stub.SearchConversations({
+                type,
+                memberIds,
+                term,
+                page_number: page,
+                page_limit: limit,
+                message_page_limit: messageLimit
+            }, (error: Error, result: { conversations: Conversation[] }) => {
                 if (error) reject(error);
                 else resolve(result.conversations);
             });
@@ -50,9 +63,21 @@ export default class ChatService {
     }
 
     public static async findConversation(
-        { conversationId, messagePage = 1, messageLimit = 1 }: { conversationId: string, messagePage?: number, messageLimit?: number }): Promise<Conversation> {
+        {
+            conversationId,
+            messagePage = 1,
+            messageLimit = 1
+        }: {
+            conversationId: string,
+            messagePage?: number,
+            messageLimit?: number
+        }): Promise<Conversation> {
         return new Promise((resolve, reject) => {
-            ChatService.stub.FindConversation({ conversationId, messagePage, messageLimit }, (error: Error, result: Conversation) => {
+            ChatService.stub.FindConversation({
+                conversationId,
+                message_page_number: messagePage,
+                message_page_size: messageLimit
+            }, (error: Error, result: Conversation) => {
                 if (error) reject(error);
                 else resolve(result);
             });
