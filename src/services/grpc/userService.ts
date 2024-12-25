@@ -22,7 +22,7 @@ export type AuthPayload = {
 }
 
 export default class UserService {
-    private static stub = new backendProto.user_service.User(
+    private static stub = new backendProto.user_service.UserService(
         process.env.ROUTE_USER_SERVICE || 'localhost:31072',
         grpc.credentials.createInsecure());
 
