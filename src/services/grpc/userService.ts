@@ -2,23 +2,9 @@ const grpc = require('@grpc/grpc-js');
 
 import { backendProto } from 'common-utils';
 
-export type GrpcToken = {
-    access_token: string;
-    refresh_token: string;
-}
-
 export type Token = {
     accessToken: string;
     refreshToken: string;
-}
-
-export type GrpcUserInfo = {
-    // public area
-    id: string;
-    avatar: string | null;
-    display_name: string;
-    // private area
-    enabled_2fa: boolean;
 }
 
 export type UserInfo = {
@@ -28,11 +14,6 @@ export type UserInfo = {
     displayName: string;
     // private area
     enabled2fa: boolean;
-}
-
-export type GrpcAuthPayload = {
-    user_info: GrpcUserInfo;
-    token: GrpcToken;
 }
 
 export type AuthPayload = {
@@ -48,20 +29,9 @@ export default class UserService {
     public static async signin(
         { username, password }: { username: string, password: string }): Promise<AuthPayload> {
         return new Promise((resolve, reject) => {
-            UserService.stub.SignIn({ username, password }, (error: Error, result: GrpcAuthPayload) => {
+            UserService.stub.SignIn({ username, password }, (error: Error, result: AuthPayload) => {
                 if (error) reject(error);
-                else resolve({
-                    token: {
-                        accessToken: result.token.access_token,
-                        refreshToken: result.token.refresh_token
-                    },
-                    userInfo: {
-                        id: result.user_info.id,
-                        avatar: result.user_info.avatar,
-                        displayName: result.user_info.display_name,
-                        enabled2fa: result.user_info.enabled_2fa
-                    }
-                });
+                else resolve(result);
             });
         });
     }
@@ -69,20 +39,9 @@ export default class UserService {
     public static async signup(
         { username, password, displayName, avatarURL }: { username: string, password: string, displayName: string, avatarURL: string | null }): Promise<AuthPayload> {
         return new Promise((resolve, reject) => {
-            UserService.stub.SignUp({ username, password, displayName, avatarURL }, (error: any, result: GrpcAuthPayload) => {
+            UserService.stub.SignUp({ username, password, displayName, avatarURL }, (error: any, result: AuthPayload) => {
                 if (error) reject(error);
-                else resolve({
-                    token: {
-                        accessToken: result.token.access_token,
-                        refreshToken: result.token.refresh_token
-                    },
-                    userInfo: {
-                        id: result.user_info.id,
-                        avatar: result.user_info.avatar,
-                        displayName: result.user_info.display_name,
-                        enabled2fa: result.user_info.enabled_2fa
-                    }
-                });
+                else resolve(result);
             });
         });
     }
@@ -90,14 +49,9 @@ export default class UserService {
     public static async findUser(
         { userId }: { userId: string }): Promise<UserInfo> {
         return new Promise((resolve, reject) => {
-            UserService.stub.FindUser({ userId }, (error: any, user: GrpcUserInfo) => {
+            UserService.stub.FindUser({ userId }, (error: any, user: UserInfo) => {
                 if (error) reject(error);
-                else resolve({
-                    id: user.id,
-                    avatar: user.avatar,
-                    displayName: user.display_name,
-                    enabled2fa: user.enabled_2fa
-                });
+                else resolve(user);
             });
         });
     }
@@ -105,14 +59,9 @@ export default class UserService {
     public static async searchUser(
         { term = '' }: { term?: string }): Promise<UserInfo[]> {
         return new Promise((resolve, reject) => {
-            UserService.stub.SearchUser({ term }, (error: any, result: { users: GrpcUserInfo[] }) => {
+            UserService.stub.SearchUser({ term }, (error: any, result: { users: UserInfo[] }) => {
                 if (error) reject(error);
-                else resolve(result.users.map(user => ({
-                    id: user.id,
-                    avatar: user.avatar,
-                    displayName: user.display_name,
-                    enabled2fa: user.enabled_2fa
-                })));
+                else resolve(result.users);
             });
         });
     }
@@ -120,14 +69,9 @@ export default class UserService {
     public static async getUsers(
         { userIds }: { userIds: string[] }): Promise<UserInfo[]> {
         return new Promise((resolve, reject) => {
-            UserService.stub.GetUsers({ userIds }, (error: any, result: { users: GrpcUserInfo[] }) => {
+            UserService.stub.GetUsers({ userIds }, (error: any, result: { users: UserInfo[] }) => {
                 if (error) reject(error);
-                else resolve(result.users.map(user => ({
-                    id: user.id,
-                    avatar: user.avatar,
-                    displayName: user.display_name,
-                    enabled2fa: user.enabled_2fa
-                })));
+                else resolve(result.users);
             });
         });
     }
