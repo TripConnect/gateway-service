@@ -2,25 +2,25 @@ const grpc = require('@grpc/grpc-js');
 
 import { backendProto } from 'common-utils';
 
-export type Generate2FAResponse = {
+export type Generate2faResponse = {
     secret: string;
     qrCode: string;
 }
 
-type Validate2FAResponse = {
+type Validate2faResponse = {
     success: boolean;
     status: 'INVALID' | 'VALID';
 }
 
 export default class TwofaService {
-    private static stub = new backendProto.twofa_service.TwoFA(
+    private static stub = new backendProto.twofa_service.TwoFactorAuthenticationService(
         process.env.ROUTE_TWOFA_SERVICE || 'localhost:31074',
         grpc.credentials.createInsecure());
 
     public static async generate2FASecret(
-        { label }: { label: string }): Promise<Generate2FAResponse> {
+        { label }: { label: string }): Promise<Generate2faResponse> {
         return new Promise((resolve, reject) => {
-            TwofaService.stub.GenerateSetting({ label }, (error: Error, result: Generate2FAResponse) => {
+            TwofaService.stub.GenerateSetting({ label }, (error: Error, result: Generate2faResponse) => {
                 if (error) reject(error);
                 else resolve(result);
             });
@@ -38,9 +38,9 @@ export default class TwofaService {
     }
 
     public static async validate2FA(
-        { resourceId, otp }: { resourceId: string, otp: string }): Promise<Validate2FAResponse> {
+        { resourceId, otp }: { resourceId: string, otp: string }): Promise<Validate2faResponse> {
         return new Promise((resolve, reject) => {
-            TwofaService.stub.ValidateResource({ resourceId, otp }, (error: any, result: Validate2FAResponse) => {
+            TwofaService.stub.ValidateResource({ resourceId, otp }, (error: any, result: Validate2faResponse) => {
                 if (error) reject(error);
                 else resolve(result);
             });
