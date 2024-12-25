@@ -53,8 +53,8 @@ export default class ChatService {
                 memberIds,
                 term,
                 page_number: page,
-                page_limit: limit,
-                message_page_limit: messageLimit
+                page_size: limit,
+                message_page_size: messageLimit
             }, (error: Error, result: { conversations: Conversation[] }) => {
                 if (error) reject(error);
                 else resolve(result.conversations);
