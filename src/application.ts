@@ -179,14 +179,20 @@ gqlServer
         json(),
         expressMiddleware(gqlServer, {
             context: async ({ req, res }) => {
-                let accessToken = req.headers.authorization?.split(" ")[1] as string;
-                let currentUserId: string | null = null;
-                if (accessToken) {
-                    let encoded = jwt.verify(accessToken, process.env.JWT_SECRET_KEY || "") as { userId: string };
-                    currentUserId = encoded.userId;
-                }
-                return {
-                    currentUserId,
+                try {
+                    let accessToken = req.headers.authorization?.split(" ")[1] as string;
+                    let currentUserId: string | null = null;
+                    if (accessToken) {
+                        let encoded = jwt.verify(accessToken, process.env.JWT_SECRET_KEY || "") as { userId: string };
+                        currentUserId = encoded.userId;
+                    }
+                    return {
+                        currentUserId,
+                    }
+                } catch (error: any) {
+                    return {
+                        currentUserId: null,
+                    }
                 }
             }
         })
