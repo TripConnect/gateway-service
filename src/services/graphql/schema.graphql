@@ -30,7 +30,7 @@ type Self implements IUser {
     id: ID!
     avatar: String
     displayName: String!
-    enabled2fa: Boolean!
+    enabledTwofa: Boolean!
 }
 
 enum ConversationType {

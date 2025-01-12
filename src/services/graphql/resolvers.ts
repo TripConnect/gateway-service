@@ -29,8 +29,8 @@ const resolvers = {
             _: any,
             { id }: { id: string }
         ) => {
-            let data = await UserService.findUser({ userId: id });
-            return data;
+            let user = await UserService.findUser({ userId: id });
+            return user;
         },
         users: async (
             _: any,
@@ -137,7 +137,7 @@ const resolvers = {
         ) => {
             try {
                 let authPayload = await UserService.signin({ username, password });
-                if (!authPayload.userInfo.enabled2fa) return authPayload;
+                if (!authPayload.userInfo.enabledTwofa) return authPayload;
 
                 let secondFactorResp = await TwofaService.validate2FA({ resourceId: authPayload.userInfo.id, otp });
                 if (secondFactorResp.success) return authPayload;

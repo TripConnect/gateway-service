@@ -13,7 +13,7 @@ export type UserInfo = {
     avatar: string | null;
     displayName: string;
     // private area
-    enabled2fa: boolean;
+    enabledTwofa: boolean;
 }
 
 export type AuthPayload = {
@@ -50,6 +50,7 @@ export default class UserService {
         { userId }: { userId: string }): Promise<UserInfo> {
         return new Promise((resolve, reject) => {
             UserService.stub.FindUser({ userId }, (error: any, user: UserInfo) => {
+                console.log(user);
                 if (error) reject(error);
                 else resolve(user);
             });
