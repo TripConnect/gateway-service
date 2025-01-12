@@ -4,12 +4,12 @@
   "description": "The gateway service",
   "main": "application.ts",
   "scripts": {
-    "build": "tsc",
+    "test": "npm run build && node dist/application.js",
+    "build": "tsc && npx copyfiles -u 1 \"src/**/*.graphql\" dist/ && tsc-alias",
     "docker:build": "docker build -t gateway-service:latest .",
     "docker:run": "docker run --name gateway-service -p 31071:31071 gateway-service:latest",
     "start": "nodemon --exec ts-node src/application.ts",
-    "dev": "nodemon --exec ts-node src/application.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --exec ts-node src/application.ts"
   },
   "keywords": [],
   "author": "Kinder <nguyenductrong12a1@gmail.com> (https://github.com/nguyenductrongdev)",
@@ -23,9 +23,11 @@
     "@types/node": "^20.10.4",
     "@types/redis": "^4.0.11",
     "@types/uuid": "^9.0.2",
+    "copyfiles": "^2.4.1",
     "express": "^4.18.2",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.10",
     "typescript": "^5.0.4"
   },
   "dependencies": {
@@ -55,6 +57,7 @@
     "redis": "^3.1.2",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.7.2",
+    "tsconfig-paths": "^4.2.0",
     "uuid": "^9.0.0",
     "winston": "^3.9.0"
   }

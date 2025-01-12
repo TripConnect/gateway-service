@@ -16,9 +16,9 @@ const ffmpeg = require('fluent-ffmpeg');
 import { PassThrough } from 'stream';
 import { instrument } from "@socket.io/admin-ui";
 
-import gqlServer from './services/graphql';
-import ChatService from './services/grpc/chatService';
-import logger from './utils/logging';
+import gqlServer from 'services/graphql';
+import ChatService from 'services/grpc/chatService';
+import logger from 'utils/logging';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 

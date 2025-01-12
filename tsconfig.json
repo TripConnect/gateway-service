@@ -1,15 +1,42 @@
 {
-    "compilerOptions": {
-        "target": "ES2016",
-        "module": "CommonJS",
-        "outDir": "dist",
-        "rootDir": "src",
-        "strict": true,
-        "esModuleInterop": true
-    },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.graphql",
-        "src/public/*",
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
     ]
+  },
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "pretty": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "noEmitHelpers": true,
+    "removeComments": true,
+    "paths": {
+      "services/*": [
+        "services/*"
+      ],
+      "utils/*": [
+        "utils/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.graphql",
+    "src/public/*",
+  ]
 }

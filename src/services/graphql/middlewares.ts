@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { StatusCode } from "../../utils/graphql";
+import { StatusCode } from "utils/graphql";
 
 export function AuthenticatedRequest(resolver: (...args: any[]) => Promise<any>) {
     return async function (...args: any[]) {
