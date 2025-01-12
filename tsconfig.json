@@ -12,12 +12,11 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "rootDir": "./src",
-    "baseUrl": "./src",
+    "rootDir": "src",
+    "baseUrl": "src",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "resolveJsonModule": true,
-    "pretty": true,
     "allowJs": true,
     "sourceMap": true,
     "declaration": false,
@@ -25,18 +24,5 @@
     "importHelpers": true,
     "noEmitHelpers": true,
     "removeComments": true,
-    "paths": {
-      "services/*": [
-        "services/*"
-      ],
-      "utils/*": [
-        "utils/*"
-      ]
-    }
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.graphql",
-    "src/public/*",
-  ]
+  }
 }
