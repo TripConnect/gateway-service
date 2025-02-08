@@ -19,6 +19,7 @@ import { instrument } from "@socket.io/admin-ui";
 import gqlServer from 'services/graphql';
 import ChatService from 'services/grpc/chatService';
 import logger from 'utils/logging';
+import { livestreamStartValidator } from 'utils/validators';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -27,7 +28,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: "*",
-    }
+    },
+    maxHttpBufferSize: 1e8
 });
 
 const PORT = process.env.GATEWAY_SERVICE_PORT || 31071;
@@ -99,7 +101,7 @@ chatNamespace.on("connection", async (socket) => {
 livesNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
     if (!token) {
-        socket.disconnect(true);
+        // socket.disconnect(true);
         logger.error({ "message": "Reject livestream socketio connection" })
         return;
     }
@@ -110,14 +112,19 @@ livesNamespace.on("connection", async (socket) => {
     const inputStream = new PassThrough();
 
     socket.on("start", async (
-        event,
+        event: { roomId: string },
         callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
     ) => {
         try {
-            let { roomId } = event;
-            // logger.info({ message: "Start lives", roomId });
+            let { error } = livestreamStartValidator.validate(event);
+            if (error) {
+                logger.error({ "message": "Invalid event of starting livestream" });
+                return;
+            }
 
-            let livestreamDir = path.join(HLS_PATH, roomId);
+            logger.info({ message: "Start lives", roomId: event.roomId });
+
+            let livestreamDir = path.join(HLS_PATH, event.roomId);
 
             if (!fs.existsSync(livestreamDir)) {
                 fs.mkdirSync(livestreamDir, { recursive: true });
@@ -135,10 +142,10 @@ livesNamespace.on("connection", async (socket) => {
                 ])
                 .output(path.join(livestreamDir, 'streaming.m3u8'))
                 .on('start', () => {
-                    console.log(`FFmpeg started for livestream ID: ${roomId}`);
+                    console.log(`FFmpeg started for livestream ID: ${event.roomId}`);
                 })
                 .on('error', (err: any) => {
-                    console.error(`FFmpeg error for livestream ID ${roomId}:`, err);
+                    console.error(`FFmpeg error for livestream ID ${event.roomId}:`, err);
                 })
                 .run(); // Start FFmpeg
             callback({ status: 'SUCCESS' });
@@ -149,21 +156,20 @@ livesNamespace.on("connection", async (socket) => {
         }
     });
 
-    // socket.on("segment", async (
-    //     event: { roomId: string, segment: Blob },
-    //     callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
-    // ) => {
-    //     try {
-    //         let { roomId, segment } = event;
-    //         logger.info({ message: "Record segment", roomId });
-    //         console.log({ inputStream });
-    //         inputStream.write(segment);
-    //         callback({ status: 'SUCCESS' });
-    //     } catch (error) {
-    //         logger.error('Error while saving livestream segment');
-    //         // callback({ status: 'ERROR' });
-    //     }
-    // });
+    socket.on("segment", async (
+        event: { roomId: string, segment: Blob },
+        callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
+    ) => {
+        try {
+            let { roomId, segment } = event;
+            logger.info({ message: "Record segment", roomId });
+            inputStream.write(segment);
+            callback({ status: 'SUCCESS' });
+        } catch (error) {
+            logger.error('Error while saving livestream segment');
+            // callback({ status: 'ERROR' });
+        }
+    });
 
     socket.on("disconnect", async (event) => {
         try {
