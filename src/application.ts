@@ -72,7 +72,10 @@ chatNamespace.on("connection", async (socket) => {
         socket.join(conversation.id);
     }
 
-    socket.on("message", async (event, callback: Function) => {
+    socket.on("message", async (
+        event: { conversationId: string, content: string },
+        callback: (ack: { status: 'DONE' }) => void
+    ) => {
         try {
             let { conversationId, content } = event;
             let rpcMessage = await ChatService.createChatMessage({ conversationId, messageContent: content, fromUserId: socket.data.userId });
@@ -97,19 +100,22 @@ livesNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
     if (!token) {
         socket.disconnect(true);
-        logger.error({ "message": "Reject socketio connection" })
+        logger.error({ "message": "Reject livestream socketio connection" })
         return;
     }
     let { userId } = jwt.verify(token, process.env.JWT_SECRET_KEY || "") as { userId: string };
-    console.info({ message: "Livestream socket connected", userId });
+    // console.info({ message: "Livestream socket connected", userId });
 
     socket.data.userId = userId;
     const inputStream = new PassThrough();
 
-    socket.on("start", async (event, callback: Function) => {
+    socket.on("start", async (
+        event,
+        callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
+    ) => {
         try {
             let { roomId } = event;
-            logger.info({ message: "Start lives", roomId });
+            // logger.info({ message: "Start lives", roomId });
 
             let livestreamDir = path.join(HLS_PATH, roomId);
 
@@ -135,27 +141,31 @@ livesNamespace.on("connection", async (socket) => {
                     console.error(`FFmpeg error for livestream ID ${roomId}:`, err);
                 })
                 .run(); // Start FFmpeg
-            // callback({ status: 'DONE' });
+            callback({ status: 'SUCCESS' });
         } catch (error: any) {
             logger.error({ message: 'Cannot saving hls segment', error });
-            logger.error(error.message);
-            // callback({ status: 'ERROR' });
+            console.log(callback);
+            callback({ status: 'FAILED' });
         }
     });
 
-    socket.on("segment", async (event, callback: Function) => {
-        try {
-            let { roomId, segment } = event;
-            logger.info({ message: "Record segment", roomId });
-            inputStream.write(segment);
-            // callback({ status: 'DONE' });
-        } catch (error) {
-            logger.error('Error while saving livestream segment');
-            // callback({ status: 'ERROR' });
-        }
-    });
+    // socket.on("segment", async (
+    //     event: { roomId: string, segment: Blob },
+    //     callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
+    // ) => {
+    //     try {
+    //         let { roomId, segment } = event;
+    //         logger.info({ message: "Record segment", roomId });
+    //         console.log({ inputStream });
+    //         inputStream.write(segment);
+    //         callback({ status: 'SUCCESS' });
+    //     } catch (error) {
+    //         logger.error('Error while saving livestream segment');
+    //         // callback({ status: 'ERROR' });
+    //     }
+    // });
 
-    socket.on("disconnect", async (event, callback: Function) => {
+    socket.on("disconnect", async (event) => {
         try {
             logger.info({ message: "Record segment ends" });
             inputStream.end();
