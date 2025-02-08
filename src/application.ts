@@ -14,7 +14,6 @@ import { graphqlUploadExpress } from 'graphql-upload-ts';
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 import { PassThrough } from 'stream';
-import { instrument } from "@socket.io/admin-ui";
 
 import gqlServer from 'services/graphql';
 import ChatService from 'services/grpc/chatService';
@@ -101,7 +100,7 @@ chatNamespace.on("connection", async (socket) => {
 livesNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
     if (!token) {
-        // socket.disconnect(true);
+        socket.disconnect(true);
         logger.error({ "message": "Reject livestream socketio connection" })
         return;
     }
@@ -109,7 +108,7 @@ livesNamespace.on("connection", async (socket) => {
     // console.info({ message: "Livestream socket connected", userId });
 
     socket.data.userId = userId;
-    const inputStream = new PassThrough();
+    socket.data.inputStream = new PassThrough();
 
     socket.on("start", async (
         event: { roomId: string },
@@ -131,7 +130,7 @@ livesNamespace.on("connection", async (socket) => {
             }
 
             // Start FFmpeg to convert the WebSocket stream to HLS
-            let ffmpegCommand = ffmpeg(inputStream)
+            let ffmpegCommand = ffmpeg(socket.data.inputStream)
                 .inputFormat('webm')
                 .videoCodec('copy')
                 .audioCodec('copy')
@@ -146,6 +145,9 @@ livesNamespace.on("connection", async (socket) => {
                 })
                 .on('error', (err: any) => {
                     console.error(`FFmpeg error for livestream ID ${event.roomId}:`, err);
+                })
+                .on('end', () => {
+                    logger.info({ message: `FFmpeg ended for room ${event.roomId}` });
                 })
                 .run(); // Start FFmpeg
             callback({ status: 'SUCCESS' });
@@ -163,7 +165,7 @@ livesNamespace.on("connection", async (socket) => {
         try {
             let { roomId, segment } = event;
             logger.info({ message: "Record segment", roomId });
-            inputStream.write(segment);
+            socket.data.inputStream.write(segment);
             callback({ status: 'SUCCESS' });
         } catch (error) {
             logger.error('Error while saving livestream segment');
@@ -174,7 +176,7 @@ livesNamespace.on("connection", async (socket) => {
     socket.on("disconnect", async (event) => {
         try {
             logger.info({ message: "Record segment ends" });
-            inputStream.end();
+            socket.data.inputStream.end();
             // callback({ status: 'DONE' });
         } catch (error) {
             logger.error('Ends livestream');
