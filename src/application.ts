@@ -28,7 +28,7 @@ const io = new Server(server, {
     cors: {
         origin: "*",
     },
-    maxHttpBufferSize: 1e8
+    maxHttpBufferSize: 5e6
 });
 
 const PORT = process.env.GATEWAY_SERVICE_PORT || 31071;
@@ -217,5 +217,5 @@ gqlServer
     ));
 
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    logger.info(`Server running on port ${PORT}`);
 });
