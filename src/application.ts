@@ -141,13 +141,13 @@ livesNamespace.on("connection", async (socket) => {
                 ])
                 .output(path.join(livestreamDir, 'streaming.m3u8'))
                 .on('start', () => {
-                    console.log(`FFmpeg started for livestream ID: ${event.roomId}`);
+                    logger.debug({ message: "FFmpeg started", roomId: event.roomId });
                 })
                 .on('error', (err: any) => {
-                    console.error(`FFmpeg error for livestream ID ${event.roomId}:`, err);
+                    logger.error({ message: "FFmpeg error", roomId: event.roomId });
                 })
                 .on('end', () => {
-                    logger.info({ message: `FFmpeg ended for room ${event.roomId}` });
+                    logger.debug({ message: "FFmpeg ended", roomId: event.roomId });
                 })
                 .run(); // Start FFmpeg
             callback({ status: 'SUCCESS' });
@@ -165,11 +165,14 @@ livesNamespace.on("connection", async (socket) => {
         try {
             let { roomId, segment } = event;
             logger.info({ message: "Record segment", roomId });
-            socket.data.inputStream.write(segment);
+            socket.data.inputStream.write(segment, (error: any) => {
+                console.log(error);
+                logger.error({ message: "Failed to write segment", roomId: event.roomId });
+            });
             callback({ status: 'SUCCESS' });
         } catch (error) {
             logger.error('Error while saving livestream segment');
-            // callback({ status: 'ERROR' });
+            callback({ status: 'FAILED' });
         }
     });
 
