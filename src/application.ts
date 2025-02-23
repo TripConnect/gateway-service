@@ -110,6 +110,10 @@ livesNamespace.on("connection", async (socket) => {
     socket.data.userId = userId;
     socket.data.inputStream = new PassThrough();
 
+    socket.data.inputStream.on('error', (err: any) => {
+        logger.error({ message: "Input stream error", error: err.message });
+    });
+
     socket.on("start", async (
         event: { roomId: string },
         callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
@@ -159,17 +163,26 @@ livesNamespace.on("connection", async (socket) => {
     });
 
     socket.on("segment", async (
-        event: { roomId: string, segment: Blob },
+        event: { roomId: string, segment: Blob | any },
         callback: (ack: { status: 'SUCCESS' | 'FAILED' }) => void
     ) => {
         try {
             let { roomId, segment } = event;
             logger.info({ message: "Record segment", roomId });
-            socket.data.inputStream.write(segment, (error: any) => {
-                console.log(error);
-                logger.error({ message: "Failed to write segment", roomId: event.roomId });
+
+            // Ensure the segment is a Buffer
+            if (!(segment instanceof Buffer)) {
+                logger.debug({ message: "Standardize segment" });
+                segment = Buffer.from(segment);
+            }
+
+            let isRecorded = socket.data.inputStream.write(segment, (error: any) => {
+                if (error) {
+                    logger.error({ message: "Failed to write segment", roomId: event.roomId, error: error.message });
+                }
             });
-            callback({ status: 'SUCCESS' });
+            logger.debug({ message: "Record segment " + isRecorded });
+            callback({ status: isRecorded ? 'SUCCESS' : 'FAILED' });
         } catch (error) {
             logger.error('Error while saving livestream segment');
             callback({ status: 'FAILED' });
