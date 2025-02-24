@@ -1,0 +1,16 @@
+name: Simple GitHub Actions Demo
+
+on: 
+  push:
+    branches:
+      - feature/ndtrong/ci-cd-integration
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Echo Docker tag
+        run: echo $GITHUB_SHA
