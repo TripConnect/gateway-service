@@ -12,5 +12,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Echo Docker tag
-        run: echo $GITHUB_SHA
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t gateway-service .
+          docker tag gateway-service:latest ${{ secrets.DOCKERHUB_USERNAME }}/gateway-service:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/gateway-service:latest
