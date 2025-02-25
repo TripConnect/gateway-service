@@ -17,6 +17,5 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t gateway-service .
-          docker tag gateway-service:latest ${{ secrets.DOCKERHUB_USERNAME }}/gateway-service:${{ github.sha }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/gateway-service:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/gateway-service:latest
