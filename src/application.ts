@@ -55,7 +55,7 @@ chatNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
     let jwtBody = TokenHelper.verify(token);
 
-    if (!token || jwtBody == null) {
+    if (!token || !jwtBody) {
         socket.disconnect(true);
         logger.warn({ "message": "Reject socketio connection" })
         return;
@@ -102,7 +102,7 @@ chatNamespace.on("connection", async (socket) => {
 livesNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
     let jwtBody = TokenHelper.verify(token);
-    if (!token || jwtBody == null) {
+    if (!token || !jwtBody) {
         socket.disconnect(true);
         logger.error({ "message": "Reject livestream socketio connection" })
         return;
