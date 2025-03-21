@@ -8,17 +8,17 @@ import { json } from 'body-parser';
 const fs = require('fs')
 const path = require('path');
 import { expressMiddleware } from '@apollo/server/express4';
-import jwt from 'jsonwebtoken';
 import morgan from 'morgan';
 import { graphqlUploadExpress } from 'graphql-upload-ts';
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 import { PassThrough } from 'stream';
 
-import gqlServer from 'services/graphql';
+import gqlServer, { GatewayContext } from 'services/graphql';
 import ChatService from 'services/grpc/chatService';
 import logger from 'utils/logging';
 import { livestreamStartValidator } from 'utils/validators';
+import { TokenHelper } from 'common-utils';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -53,16 +53,18 @@ app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }))
 
 chatNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
-    if (!token) {
+    let jwtBody = TokenHelper.verify(token);
+
+    if (!token || jwtBody == null) {
         socket.disconnect(true);
         logger.warn({ "message": "Reject socketio connection" })
         return;
     }
-    let { userId } = jwt.verify(token, process.env.JWT_SECRET_KEY || "") as { userId: string };
-    socket.data.userId = userId;
-    console.info({ message: "Chat socket connected", userId });
 
-    let conversations = await ChatService.searchConversations({ memberIds: [userId] });
+    socket.data.userId = jwtBody.userId;
+    console.info({ message: "Chat socket connected", userId: socket.data.userId });
+
+    let conversations = await ChatService.searchConversations({ memberIds: [socket.data.userId] });
 
     for (let conversation of conversations) {
         logger.debug({
@@ -99,15 +101,16 @@ chatNamespace.on("connection", async (socket) => {
 
 livesNamespace.on("connection", async (socket) => {
     let { token } = socket.handshake.auth;
-    if (!token) {
+    let jwtBody = TokenHelper.verify(token);
+    if (!token || jwtBody == null) {
         socket.disconnect(true);
         logger.error({ "message": "Reject livestream socketio connection" })
         return;
     }
-    let { userId } = jwt.verify(token, process.env.JWT_SECRET_KEY || "") as { userId: string };
+
     // console.info({ message: "Livestream socket connected", userId });
 
-    socket.data.userId = userId;
+    socket.data.userId = jwtBody.userId;
     socket.data.inputStream = new PassThrough();
 
     socket.data.inputStream.on('error', (err: any) => {
@@ -212,21 +215,11 @@ gqlServer
         cors<cors.CorsRequest>(),
         json(),
         expressMiddleware(gqlServer, {
-            context: async ({ req, res }) => {
-                try {
-                    let accessToken = req.headers.authorization?.split(" ")[1] as string;
-                    let currentUserId: string | null = null;
-                    if (accessToken) {
-                        let encoded = jwt.verify(accessToken, process.env.JWT_SECRET_KEY || "") as { userId: string };
-                        currentUserId = encoded.userId;
-                    }
-                    return {
-                        currentUserId,
-                    }
-                } catch (error: any) {
-                    return {
-                        currentUserId: null,
-                    }
+            context: async ({ req, res }): Promise<GatewayContext> => {
+                let accessToken = req.headers.authorization?.split(" ")?.[1] as string;
+                let jwtBody = TokenHelper.verify(accessToken);
+                return {
+                    currentUserId: jwtBody?.userId || null
                 }
             }
         })

@@ -7,7 +7,7 @@ import resolvers from "services/graphql/resolvers";
 const typeDefs = readFileSync(__dirname + '/schema.graphql', { encoding: 'utf-8' });
 const GRAPHQL_MAX_DEPTH = process.env.GRAPHQL_MAX_DEPTH || 5;
 
-interface GatewayContext {
+export interface GatewayContext {
     currentUserId: string | null;
 }
 
