@@ -9,22 +9,22 @@ export type ServiceInstance = {
 
 export default class DiscoveryService {
 
-    private static stub = null;
+    private static _stub = null;
 
-    private static async getStub(): Promise<any> {
-        if (!DiscoveryService.stub) {
-            DiscoveryService.stub = new backendProto.discovery_service.DiscoveryService(
-                process.env.NODE_ENV === "local" ? 'localhost:31079' : "discovery-service:31079",
-                grpc.credentials.createInsecure());
-        }
-        return DiscoveryService.stub;
+    static {
+        DiscoveryService._stub = new backendProto.discovery_service.DiscoveryService(
+            process.env.NODE_ENV === "local" ? 'localhost:31079' : "discovery-service:31079",
+            grpc.credentials.createInsecure());
+    }
+
+    private static get STUB(): any {
+        return DiscoveryService._stub;
     }
 
     public static async discover(
         { serviceName }: { serviceName: string }): Promise<ServiceInstance> {
-        let stub = await DiscoveryService.getStub();
         return new Promise((resolve, reject) => {
-            stub.Discover({ serviceName }, (error: Error, result: ServiceInstance) => {
+            DiscoveryService.STUB.Discover({ serviceName }, (error: Error, result: ServiceInstance) => {
                 if (error) reject(error);
                 else resolve(result);
             });
