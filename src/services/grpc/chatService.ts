@@ -1,6 +1,7 @@
 const grpc = require('@grpc/grpc-js');
 
 import { backendProto } from 'common-utils';
+import DiscoveryService from './discoveryService';
 
 export enum ConversationType {
     PRIVATE = 'PRIVATE',
@@ -25,14 +26,25 @@ export type Conversation = {
 }
 
 export default class ChatService {
-    private static stub = new backendProto.chat_service.ChatService(
-        process.env.ROUTE_CHAT_SERVICE || 'localhost:31073',
-        grpc.credentials.createInsecure());
+
+    private static stub = null;
+
+    private static async getStub(): Promise<any> {
+        if (!ChatService.stub) {
+            let serviceInstance = await DiscoveryService.discover({ serviceName: "chat-service" });
+            ChatService.stub = new backendProto.chat_service.ChatService(
+                `${serviceInstance.host}:${serviceInstance.port}`,
+                grpc.credentials.createInsecure());
+        }
+
+        return ChatService.stub;
+    }
 
     public static async createConversation(
         { ownerId, name, type, memberIds }: { ownerId: string, name: string, type: string, memberIds: string[] }): Promise<Conversation> {
+        let stub = await ChatService.getStub();
         return new Promise((resolve, reject) => {
-            ChatService.stub.CreateConversation({ ownerId, name, type, memberIds }, (error: Error, result: Conversation) => {
+            stub.CreateConversation({ ownerId, name, type, memberIds }, (error: Error, result: Conversation) => {
                 if (error) reject(error);
                 else resolve(result);
             });
@@ -47,8 +59,9 @@ export default class ChatService {
         limit = 50,
         messageLimit = 10
     }): Promise<Conversation[]> {
+        let stub = await ChatService.getStub();
         return new Promise((resolve, reject) => {
-            ChatService.stub.SearchConversations({
+            stub.SearchConversations({
                 type,
                 memberIds,
                 term,
@@ -72,8 +85,9 @@ export default class ChatService {
             messagePage?: number,
             messageLimit?: number
         }): Promise<Conversation> {
+        let stub = await ChatService.getStub();
         return new Promise((resolve, reject) => {
-            ChatService.stub.FindConversation({
+            stub.FindConversation({
                 conversationId,
                 message_page_number: messagePage,
                 message_page_size: messageLimit
@@ -86,8 +100,9 @@ export default class ChatService {
 
     public static async createChatMessage(
         { conversationId, fromUserId, messageContent }: { conversationId: string, fromUserId: string, messageContent: string }): Promise<ChatMessage> {
+        let stub = await ChatService.getStub();
         return new Promise((resolve, reject) => {
-            ChatService.stub.CreateChatMessage({ conversationId, fromUserId, messageContent }, (error: Error, result: ChatMessage) => {
+            stub.CreateChatMessage({ conversationId, fromUserId, messageContent }, (error: Error, result: ChatMessage) => {
                 if (error) reject(error);
                 else resolve(result);
             });

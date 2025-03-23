@@ -1,6 +1,7 @@
 const grpc = require('@grpc/grpc-js');
 
 import { backendProto } from 'common-utils';
+import DiscoveryService from './discoveryService';
 
 export type Token = {
     accessToken: string;
@@ -22,14 +23,25 @@ export type AuthPayload = {
 }
 
 export default class UserService {
-    private static stub = new backendProto.user_service.UserService(
-        process.env.ROUTE_USER_SERVICE || 'localhost:31072',
-        grpc.credentials.createInsecure());
+
+    private static stub = null;
+
+    private static async getStub(): Promise<any> {
+        if (!UserService.stub) {
+            let serviceInstance = await DiscoveryService.discover({ serviceName: "user-service" });
+            UserService.stub = new backendProto.user_service.UserService(
+                `${serviceInstance.host}:${serviceInstance.port}`,
+                grpc.credentials.createInsecure());
+        }
+
+        return UserService.stub;
+    }
 
     public static async signin(
         { username, password }: { username: string, password: string }): Promise<AuthPayload> {
+        let stub = await UserService.getStub();
         return new Promise((resolve, reject) => {
-            UserService.stub.SignIn({ username, password }, (error: Error, result: AuthPayload) => {
+            stub.SignIn({ username, password }, (error: Error, result: AuthPayload) => {
                 if (error) reject(error);
                 else resolve(result);
             });
@@ -37,9 +49,10 @@ export default class UserService {
     }
 
     public static async signup(
-        { username, password, displayName, avatarURL }: { username: string, password: string, displayName: string, avatarURL: string | null }): Promise<AuthPayload> {
+        { username, password, displayName, avatarUrl }: { username: string, password: string, displayName: string, avatarUrl: string | null }): Promise<AuthPayload> {
+        let stub = await UserService.getStub();
         return new Promise((resolve, reject) => {
-            UserService.stub.SignUp({ username, password, displayName, avatarURL }, (error: any, result: AuthPayload) => {
+            stub.SignUp({ username, password, displayName, avatarUrl }, (error: any, result: AuthPayload) => {
                 if (error) reject(error);
                 else resolve(result);
             });
@@ -48,9 +61,9 @@ export default class UserService {
 
     public static async findUser(
         { userId }: { userId: string }): Promise<UserInfo> {
+        let stub = await UserService.getStub();
         return new Promise((resolve, reject) => {
-            UserService.stub.FindUser({ userId }, (error: any, user: UserInfo) => {
-                console.log(user);
+            stub.FindUser({ userId }, (error: any, user: UserInfo) => {
                 if (error) reject(error);
                 else resolve(user);
             });
@@ -59,8 +72,9 @@ export default class UserService {
 
     public static async searchUser(
         { term = '' }: { term?: string }): Promise<UserInfo[]> {
+        let stub = await UserService.getStub();
         return new Promise((resolve, reject) => {
-            UserService.stub.SearchUser({ term }, (error: any, result: { users: UserInfo[] }) => {
+            stub.SearchUser({ term }, (error: any, result: { users: UserInfo[] }) => {
                 if (error) reject(error);
                 else resolve(result.users);
             });
@@ -69,8 +83,9 @@ export default class UserService {
 
     public static async getUsers(
         { userIds }: { userIds: string[] }): Promise<UserInfo[]> {
+        let stub = await UserService.getStub();
         return new Promise((resolve, reject) => {
-            UserService.stub.GetUsers({ userIds }, (error: any, result: { users: UserInfo[] }) => {
+            stub.GetUsers({ userIds }, (error: any, result: { users: UserInfo[] }) => {
                 if (error) reject(error);
                 else resolve(result.users);
             });

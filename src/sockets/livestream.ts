@@ -79,7 +79,6 @@ export function start(socketServer: Server) {
                 callback({ status: 'SUCCESS' });
             } catch (error: any) {
                 logger.error({ message: 'Cannot saving hls segment', error });
-                console.log(callback);
                 callback({ status: 'FAILED' });
             }
         });

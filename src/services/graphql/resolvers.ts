@@ -169,17 +169,17 @@ const resolvers = {
             _: any,
             { username, password, displayName, avatar }: { username: string, password: string, displayName: string, avatar: Promise<any> },
         ) => {
-            let avatarURL = null;
+            let avatarUrl = null;
             if (avatar !== undefined) {
                 const { createReadStream, filename, mimetype, encoding } = await avatar;
                 const stream = createReadStream();
-                avatarURL = `/upload/${uuidv4()}.${filename.split('.').at(-1)}`;
-                const out = require('fs').createWriteStream(process.env.STATIC_DIRECTORY + avatarURL);
+                avatarUrl = `/upload/${uuidv4()}.${filename.split('.').at(-1)}`;
+                const out = require('fs').createWriteStream(process.env.STATIC_DIRECTORY + avatarUrl);
                 stream.pipe(out);
                 await finished(out);
             }
             try {
-                let response = await UserService.signup({ username, password, displayName, avatarURL });
+                let response = await UserService.signup({ username, password, displayName, avatarUrl });
                 return response;
             } catch (err: any) {
                 switch (err.code) {
