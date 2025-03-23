@@ -2,6 +2,7 @@ const grpc = require('@grpc/grpc-js');
 
 import { backendProto } from 'common-utils';
 import DiscoveryService from './discoveryService';
+import logger from 'utils/logging';
 
 export type Generate2faResponse = {
     secret: string;
@@ -15,24 +16,30 @@ type Validate2faResponse = {
 
 export default class TwofaService {
 
-    private static stub = null;
+    private static _stub = null;
 
-    private static async getStub(): Promise<any> {
-        if (!TwofaService.stub) {
-            let serviceInstance = await DiscoveryService.discover({ serviceName: "twofa-service" });
-            TwofaService.stub = new backendProto.twofa_service.TwoFactorAuthenticationService(
-                `${serviceInstance.host}:${serviceInstance.port}`,
-                grpc.credentials.createInsecure());
-        }
+    static {
+        DiscoveryService.discover({ serviceName: "twofa-service" })
+            .then(serviceInstance => {
+                TwofaService._stub = new backendProto.twofa_service.TwoFactorAuthenticationService(
+                    `${serviceInstance.host}:${serviceInstance.port}`,
+                    grpc.credentials.createInsecure()
+                );
+            })
+            .catch(error => {
+                logger.error(error);
+                logger.error("Failed to initialize gRPC stub");
+            });
+    }
 
-        return TwofaService.stub;
+    private static get STUB(): any {
+        return TwofaService._stub;
     }
 
     public static async generate2FASecret(
         { label }: { label: string }): Promise<Generate2faResponse> {
-        let stub = await TwofaService.getStub();
         return new Promise((resolve, reject) => {
-            stub.GenerateSetting({ label }, (error: Error, result: Generate2faResponse) => {
+            TwofaService.STUB.GenerateSetting({ label }, (error: Error, result: Generate2faResponse) => {
                 if (error) reject(error);
                 else resolve(result);
             });
@@ -41,9 +48,8 @@ export default class TwofaService {
 
     public static async enable2FA(
         { resourceId, secret, label, otp }: { resourceId: string, secret: string, otp: string, label: string }): Promise<void> {
-        let stub = await TwofaService.getStub();
         return new Promise((resolve, reject) => {
-            stub.CreateSetting({ resourceId, secret, label, otp }, (error: any, result: any) => {
+            TwofaService.STUB.CreateSetting({ resourceId, secret, label, otp }, (error: any, result: any) => {
                 if (error) reject(error);
                 else resolve();
             });
@@ -52,9 +58,8 @@ export default class TwofaService {
 
     public static async validate2FA(
         { resourceId, otp }: { resourceId: string, otp: string }): Promise<Validate2faResponse> {
-        let stub = await TwofaService.getStub();
         return new Promise((resolve, reject) => {
-            stub.ValidateResource({ resourceId, otp }, (error: any, result: Validate2faResponse) => {
+            TwofaService.STUB.ValidateResource({ resourceId, otp }, (error: any, result: Validate2faResponse) => {
                 if (error) reject(error);
                 else resolve(result);
             });
