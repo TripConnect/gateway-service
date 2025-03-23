@@ -17,8 +17,6 @@ import logger from 'utils/logging';
 import { start as startLivesSocket } from 'sockets/livestream';
 import { start as startChatSocket } from 'sockets/chat';
 
-ConfigHelper.load();
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
