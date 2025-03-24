@@ -14,7 +14,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 export function start(socketServer: Server) {
     const livesNamespace = socketServer.of('/livestream');
 
-    const PUBLIC_PATH = path.join(__dirname, 'public');
+    const PUBLIC_PATH = path.join(__dirname, '../public');
     const LIVESTREAM_FOLDER = 'livestreams';
     const HLS_PATH = path.join(PUBLIC_PATH, LIVESTREAM_FOLDER);
 
