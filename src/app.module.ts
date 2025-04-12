@@ -5,7 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
 import { UserResolver } from './user/user.resolver';
-import { TokenHelper } from 'common-utils';
+import { ConfigHelper, TokenHelper } from 'common-utils';
 import { Request, Response } from 'express';
 
 export interface GatewayContext {
@@ -14,7 +14,9 @@ export interface GatewayContext {
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [ConfigHelper.readAll],
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,

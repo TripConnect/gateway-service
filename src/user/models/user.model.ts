@@ -17,12 +17,12 @@ export class User {
     @Field()
     enabledTwofa: boolean;
 
-    static fromUserInfo(userInfo: UserInfo.AsObject): User {
+    static fromUserInfo(userInfo: UserInfo): User {
         let user = new User();
-        user.id = userInfo.id;
-        user.displayName = userInfo.displayName;
-        user.avatar = userInfo.avatar;
-        user.enabledTwofa = userInfo.enabledTwofa;
+        user.id = userInfo.getId();
+        user.displayName = userInfo.getDisplayName();
+        user.avatar = userInfo.getAvatar();
+        user.enabledTwofa = userInfo.getEnabledTwofa();
         return user;
     }
 }
