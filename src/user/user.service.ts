@@ -13,7 +13,6 @@ import { UserServiceClient } from 'common-utils/protos/defs/user_service_grpc_pb
 import { User } from './models/user.model';
 import { DiscoveryServiceClient } from 'common-utils/protos/defs/discovery_service_grpc_pb';
 import { DiscoveryRequest } from 'common-utils/protos/defs/discovery_service_pb';
-import { ConfigHelper } from 'common-utils';
 import { ConfigService } from '@nestjs/config';
 
 
@@ -51,6 +50,17 @@ export class UserService {
             userClient.findUser(req, (error, userInfo) => {
                 if (error) reject(error);
                 else resolve(User.fromUserInfo(userInfo));
+            });
+        });
+    }
+
+    async searchUsers(req: SearchUserRequest): Promise<User[]> {
+        let userClient = await this.getUserClient();
+
+        return new Promise((resolve, reject) => {
+            userClient.searchUser(req, (error, usersInfo) => {
+                if (error) reject(error);
+                else resolve(usersInfo.getUsersList().map(userInfo => User.fromUserInfo(userInfo)));
             });
         });
     }

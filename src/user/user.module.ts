@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
     imports: [ConfigModule],
     providers: [UserService],
-    exports: [UserService]
+    exports: [UserService],
 })
 export class UserModule { }

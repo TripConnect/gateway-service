@@ -1,0 +1,30 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  displayName: String!
+  avatar: String
+  enabledTwofa: Boolean!
+}
+
+type Settings {
+  secret: String!
+  qrCode: String!
+}
+
+type ResponseModel {
+  status: Boolean!
+}
+
+type Query {
+  me: User!
+  user(id: ID!): User!
+  users(searchTerm: String!, page: Int! = 1, limit: Int! = 10): [User!]!
+}
+
+type Mutation {
+  generate2FASecret: Settings!
+  enable2FA(secret: String!, otp: String!): ResponseModel!
+}

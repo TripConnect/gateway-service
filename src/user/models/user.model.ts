@@ -6,7 +6,7 @@ import { UserInfo } from 'common-utils/protos/defs/user_service_pb';
 export class User {
 
     @Field(type => ID)
-    id: String;
+    id: string;
 
     @Field()
     displayName: string;

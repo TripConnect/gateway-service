@@ -7,6 +7,8 @@ import { UserModule } from './user/user.module';
 import { UserResolver } from './user/user.resolver';
 import { ConfigHelper, TokenHelper } from 'common-utils';
 import { Request, Response } from 'express';
+import { TwofaModule } from './twofa/twofa.module';
+import { TwofaResolver } from './twofa/twofa.resolver';
 
 export interface GatewayContext {
   currentUserId: string | null;
@@ -19,7 +21,7 @@ export interface GatewayContext {
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
+      autoSchemaFile: 'schema.gql',
       context: ({ req, res }: { req: Request, res: Response }): GatewayContext => {
         let accessToken = req.headers.authorization?.split(" ")?.[1] as string;
         let jwtBody = TokenHelper.verify(accessToken);
@@ -29,8 +31,9 @@ export interface GatewayContext {
       }
     }),
     UserModule,
+    TwofaModule,
   ],
   controllers: [AppController],
-  providers: [UserResolver],
+  providers: [UserResolver, TwofaResolver],
 })
 export class AppModule { }
