@@ -22,6 +22,7 @@ export interface GatewayContext {
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
+      sortSchema: true,
       context: ({ req, res }: { req: Request, res: Response }): GatewayContext => {
         let accessToken = req.headers.authorization?.split(" ")?.[1] as string;
         let jwtBody = TokenHelper.verify(accessToken);

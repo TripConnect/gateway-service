@@ -2,29 +2,29 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  id: ID!
-  displayName: String!
-  avatar: String
-  enabledTwofa: Boolean!
+type Mutation {
+  enable2FA(otp: String!, secret: String!): ResponseModel!
+  generate2FASecret: Settings!
 }
 
-type Settings {
-  secret: String!
-  qrCode: String!
+type Query {
+  me: User!
+  user(id: ID!): User!
+  users(limit: Int! = 10, page: Int! = 1, searchTerm: String!): [User!]!
 }
 
 type ResponseModel {
   status: Boolean!
 }
 
-type Query {
-  me: User!
-  user(id: ID!): User!
-  users(searchTerm: String!, page: Int! = 1, limit: Int! = 10): [User!]!
+type Settings {
+  qrCode: String!
+  secret: String!
 }
 
-type Mutation {
-  generate2FASecret: Settings!
-  enable2FA(secret: String!, otp: String!): ResponseModel!
+type User {
+  avatar: String
+  displayName: String!
+  enabledTwofa: Boolean!
+  id: ID!
 }
