@@ -26,9 +26,9 @@ export class TwofaResolver {
 
     @Mutation(() => ResponseModel)
     async enable2FA(
+        @Context() context: GatewayContext,
         @Args('secret', { type: () => String }) secret: string,
         @Args('otp', { type: () => String }) otp: string,
-        @Context() context: GatewayContext
     ): Promise<ResponseModel> {
         if (!context.currentUserId) {
             return new ResponseModel(false);

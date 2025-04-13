@@ -14,6 +14,7 @@ import { User } from './models/user.model';
 import { DiscoveryServiceClient } from 'common-utils/protos/defs/discovery_service_grpc_pb';
 import { DiscoveryRequest } from 'common-utils/protos/defs/discovery_service_pb';
 import { ConfigService } from '@nestjs/config';
+import { AuthUser } from './models/authenticated.model';
 
 
 @Injectable()
@@ -43,13 +44,24 @@ export class UserService {
         });
     }
 
+    async signIn(req: SignInRequest): Promise<AuthUser> {
+        let userClient = await this.getUserClient();
+
+        return new Promise((resolve, reject) => {
+            userClient.signIn(req, (error, userInfo) => {
+                if (error) reject(error);
+                else resolve(AuthUser.fromGrpcAuthInfo(userInfo));
+            });
+        });
+    }
+
     async findUser(req: FindUserRequest): Promise<User> {
         let userClient = await this.getUserClient();
 
         return new Promise((resolve, reject) => {
             userClient.findUser(req, (error, userInfo) => {
                 if (error) reject(error);
-                else resolve(User.fromUserInfo(userInfo));
+                else resolve(User.fromGrpcUserInfo(userInfo));
             });
         });
     }
@@ -60,7 +72,7 @@ export class UserService {
         return new Promise((resolve, reject) => {
             userClient.searchUser(req, (error, usersInfo) => {
                 if (error) reject(error);
-                else resolve(usersInfo.getUsersList().map(userInfo => User.fromUserInfo(userInfo)));
+                else resolve(usersInfo.getUsersList().map(userInfo => User.fromGrpcUserInfo(userInfo)));
             });
         });
     }

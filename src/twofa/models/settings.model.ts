@@ -11,10 +11,10 @@ export class Settings {
     @Field()
     qrCode: string;
 
-    static fromGenerateResponse(from: Generate2faResponse): Settings {
+    static fromGrpcGeneration(message: Generate2faResponse): Settings {
         let settings = new Settings();
-        settings.secret = from.getSecret();
-        settings.qrCode = from.getQrCode();
+        settings.secret = message.getSecret();
+        settings.qrCode = message.getQrCode();
         return settings;
     }
 

@@ -2,9 +2,15 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthUser {
+  token: Token!
+  userInfo: User!
+}
+
 type Mutation {
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
+  signin(otp: String! = "", password: String!, username: String!): AuthUser!
 }
 
 type Query {
@@ -20,6 +26,11 @@ type ResponseModel {
 type Settings {
   qrCode: String!
   secret: String!
+}
+
+type Token {
+  accessToken: String!
+  refreshToken: String!
 }
 
 type User {

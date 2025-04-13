@@ -17,12 +17,16 @@ export class User {
     @Field()
     enabledTwofa: boolean;
 
-    static fromUserInfo(userInfo: UserInfo): User {
+    static fromGrpcUserInfo(message?: UserInfo): User {
+        if (!message) {
+            return new User();
+        }
+
         let user = new User();
-        user.id = userInfo.getId();
-        user.displayName = userInfo.getDisplayName();
-        user.avatar = userInfo.getAvatar();
-        user.enabledTwofa = userInfo.getEnabledTwofa();
+        user.id = message.getId();
+        user.displayName = message.getDisplayName();
+        user.avatar = message.getAvatar();
+        user.enabledTwofa = message.getEnabledTwofa();
         return user;
     }
 }

@@ -4,9 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { DiscoveryServiceClient } from "common-utils/protos/defs/discovery_service_grpc_pb";
 import { DiscoveryRequest } from "common-utils/protos/defs/discovery_service_pb";
 import { TwoFactorAuthenticationServiceClient } from 'common-utils/protos/defs/twofa_service_grpc_pb';
-import { Create2faRequest, Generate2faRequest, Generate2faResponse } from 'common-utils/protos/defs/twofa_service_pb';
+import { Create2faRequest, Generate2faRequest, Generate2faResponse, Validate2faRequest } from 'common-utils/protos/defs/twofa_service_pb';
 import { Settings } from './models/settings.model';
 import { ResponseModel } from 'src/common/models/response.model';
+import { Validation } from './models/validation.model';
 
 @Injectable()
 export class TwofaService {
@@ -42,7 +43,7 @@ export class TwofaService {
         return new Promise((resolve, reject) => {
             userClient.generateSetting(req, (error, resp) => {
                 if (error) reject(error);
-                else resolve(Settings.fromGenerateResponse(resp));
+                else resolve(Settings.fromGrpcGeneration(resp));
             });
         });
     }
@@ -54,6 +55,18 @@ export class TwofaService {
             userClient.generateSetting(req, (error, resp) => {
                 if (error) reject(error);
                 else resolve(new ResponseModel(true));
+            });
+        });
+    }
+
+
+    async validateTwofa(req: Validate2faRequest): Promise<Validation> {
+        let userClient = await this.getTwofaClient();
+
+        return new Promise((resolve, reject) => {
+            userClient.validateResource(req, (error, resp) => {
+                if (error) reject(error);
+                else resolve(Validation.fromGrpcValidation(resp));
             });
         });
     }
