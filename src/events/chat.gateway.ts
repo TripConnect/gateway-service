@@ -3,8 +3,8 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { WsAuthGuard } from "src/guards/socket.guard";
 import { CreateChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
+import { ChatService } from "../chat/chat.service";
 import { SocketChatMessageRequest, SocketChatMessageResponse } from "./models/chat-message.model";
-import { ChatService } from "./chat.service";
 
 
 @UseGuards(WsAuthGuard)
