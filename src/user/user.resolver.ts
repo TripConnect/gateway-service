@@ -68,8 +68,8 @@ export class UserResolver {
     @Query(() => [User])
     async users(
         @Args('searchTerm', { type: () => String }) searchTerm: string,
-        @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
-        @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+        @Args('pageNumber', { type: () => Int, defaultValue: 0 }) page: number,
+        @Args('pageSize', { type: () => Int, defaultValue: 20 }) limit: number,
     ): Promise<User[]> {
         let req = new SearchUserRequest()
             .setTerm(searchTerm)
