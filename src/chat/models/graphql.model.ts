@@ -1,7 +1,7 @@
 
 import { Args, Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { ConversationType, Conversation as GrpcConversation, ChatMessage as GqlChatMessage } from 'common-utils/protos/defs/chat_service_pb';
-import { User } from 'src/user/models/user.model';
+import { User } from 'src/user/models/graphql.model';
 
 @ObjectType()
 export class Conversation {
@@ -47,4 +47,22 @@ export class Conversation {
         conversation.lastMessageAt = new Date().getMilliseconds(); // FIXME: Adding to chat proto
         return conversation;
     }
+}
+
+@ObjectType()
+export class Message {
+    @Field(type => ID)
+    id: string;
+
+    @Field()
+    conversation: Conversation;
+
+    @Field()
+    fromUser: User;
+
+    @Field()
+    messageContent: string
+
+    @Field()
+    createdAt: number
 }

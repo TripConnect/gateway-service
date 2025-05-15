@@ -12,11 +12,11 @@ export class WsAuthGuard implements CanActivate {
         try {
             const payload = TokenHelper.verify(token);
             if (!payload) {
-                console.info("Chat socket rejected");
+                console.info("Socket rejected");
                 return false;
             }
             client.data.user = payload;
-            console.info("User chat socket connected " + payload.userId);
+            console.info("Socket connected " + payload.userId);
             return true;
         } catch (error) {
             console.error(error);

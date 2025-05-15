@@ -9,7 +9,6 @@ import { ConfigHelper, TokenHelper } from 'common-utils';
 import { Request, Response } from 'express';
 import { TwofaModule } from './twofa/twofa.module';
 import { TwofaResolver } from './twofa/twofa.resolver';
-import { EventsModule } from './events/events.module';
 import { ChatModule } from './chat/chat.module';
 
 export interface GatewayContext {
@@ -35,7 +34,6 @@ export interface GatewayContext {
     }),
     UserModule,
     TwofaModule,
-    EventsModule,
     ChatModule,
   ],
   controllers: [AppController],

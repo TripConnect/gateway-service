@@ -1,13 +1,12 @@
 import { Args, Context, ID, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { User } from "./models/user.model";
 import { UserService } from "./user.service";
 import { FindUserRequest, SearchUserRequest, SignInRequest } from "common-utils/protos/defs/user_service_pb";
 import { GraphQLError } from 'graphql';
 import { GatewayContext } from "src/app.module";
-import { AuthUser } from "./models/authenticated.model";
+import { AuthUser, User } from "./models/graphql.model";
 import { TwofaService } from "src/twofa/twofa.service";
 import { Validate2faRequest } from "common-utils/protos/defs/twofa_service_pb";
-import { StatusCode } from "src/common/status";
+import { StatusCode } from "src/shared/status";
 
 @Resolver()
 export class UserResolver {

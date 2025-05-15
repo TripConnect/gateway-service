@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as grpc from '@grpc/grpc-js';
 import {
-    SignUpRequest,
     SignInRequest,
     FindUserRequest,
-    GetUsersRequest,
     SearchUserRequest,
-    AuthenticatedInfo,
-    UserInfo,
 } from 'common-utils/protos/defs/user_service_pb';
 import { UserServiceClient } from 'common-utils/protos/defs/user_service_grpc_pb';
-import { User } from './models/user.model';
 import { DiscoveryServiceClient } from 'common-utils/protos/defs/discovery_service_grpc_pb';
 import { DiscoveryRequest } from 'common-utils/protos/defs/discovery_service_pb';
 import { ConfigService } from '@nestjs/config';
-import { AuthUser } from './models/authenticated.model';
+import { AuthUser, User } from './models/graphql.model';
 
 
 @Injectable()

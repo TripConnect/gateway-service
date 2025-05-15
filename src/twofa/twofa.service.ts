@@ -4,10 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { DiscoveryServiceClient } from "common-utils/protos/defs/discovery_service_grpc_pb";
 import { DiscoveryRequest } from "common-utils/protos/defs/discovery_service_pb";
 import { TwoFactorAuthenticationServiceClient } from 'common-utils/protos/defs/twofa_service_grpc_pb';
-import { Create2faRequest, Generate2faRequest, Generate2faResponse, Validate2faRequest } from 'common-utils/protos/defs/twofa_service_pb';
-import { Settings } from './models/settings.model';
-import { ResponseModel } from 'src/common/models/response.model';
-import { Validation } from './models/validation.model';
+import { Create2faRequest, Generate2faRequest, Validate2faRequest } from 'common-utils/protos/defs/twofa_service_pb';
+import { Settings, Validation } from './models/graphql.model';
+import { ResponseModel } from 'src/shared/models/response.model';
 
 @Injectable()
 export class TwofaService {
