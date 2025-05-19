@@ -16,7 +16,7 @@ type Mutation {
 type Query {
   me: User!
   user(id: ID!): User!
-  users(limit: Int! = 10, page: Int! = 1, searchTerm: String!): [User!]!
+  users(pageNumber: Int! = 0, pageSize: Int! = 20, searchTerm: String!): [User!]!
 }
 
 type ResponseModel {

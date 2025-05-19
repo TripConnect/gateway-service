@@ -1,44 +1,5 @@
-
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { AuthenticatedInfo, UserInfo, Token as GrpcToken } from 'common-utils/protos/defs/user_service_pb';
-
-@ObjectType()
-export class AuthUser {
-
-    @Field()
-    userInfo: User;
-
-    @Field()
-    token: Token;
-
-    public static fromGrpcAuthInfo(message: AuthenticatedInfo): AuthUser {
-        let authUser = new AuthUser();
-        authUser.userInfo = User.fromGrpcUserInfo(message.getUserInfo());
-        authUser.token = Token.fromGrpcToken(message.getToken())
-        return authUser;
-    }
-}
-
-@ObjectType()
-export class Token {
-
-    @Field()
-    accessToken: string;
-
-    @Field()
-    refreshToken: string;
-
-    public static fromGrpcToken(message?: GrpcToken): Token {
-        if (!message) {
-            return new Token();
-        }
-
-        let token = new Token();
-        token.accessToken = message.getAccessToken();
-        token.refreshToken = message.getRefreshToken();
-        return token;
-    }
-}
 
 @ObjectType()
 export class User {
@@ -66,5 +27,43 @@ export class User {
         user.avatar = message.getAvatar();
         user.enabledTwofa = message.getEnabledTwofa();
         return user;
+    }
+}
+
+@ObjectType()
+export class Token {
+
+    @Field()
+    accessToken: string;
+
+    @Field()
+    refreshToken: string;
+
+    public static fromGrpcToken(message?: GrpcToken): Token {
+        if (!message) {
+            return new Token();
+        }
+
+        let token = new Token();
+        token.accessToken = message.getAccessToken();
+        token.refreshToken = message.getRefreshToken();
+        return token;
+    }
+}
+
+@ObjectType()
+export class AuthUser {
+
+    @Field()
+    userInfo: User;
+
+    @Field()
+    token: Token;
+
+    public static fromGrpcAuthInfo(message: AuthenticatedInfo): AuthUser {
+        let authUser = new AuthUser();
+        authUser.userInfo = User.fromGrpcUserInfo(message.getUserInfo());
+        authUser.token = Token.fromGrpcToken(message.getToken())
+        return authUser;
     }
 }
