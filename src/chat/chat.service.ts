@@ -5,13 +5,14 @@ import { DiscoveryServiceClient } from "common-utils/protos/defs/discovery_servi
 import { DiscoveryRequest } from "common-utils/protos/defs/discovery_service_pb";
 import { ChatServiceClient } from 'common-utils/protos/defs/chat_service_grpc_pb';
 import {
-    ChatMessage,
-    Conversation,
+    ChatMessage as GrpcChatMessage,
+    Conversation as GrpcConversation,
     CreateConversationRequest,
     FindConversationRequest,
     SearchConversationsRequest,
     CreateChatMessageRequest,
 } from 'common-utils/protos/defs/chat_service_pb';
+import { Conversation, Message } from './models/graphql.model';
 
 @Injectable()
 export class ChatService {
@@ -46,7 +47,7 @@ export class ChatService {
         return new Promise((resolve, reject) => {
             chatClient.createConversation(req, (error, conversation) => {
                 if (error) reject(error);
-                else resolve(conversation);
+                else resolve(Conversation.fromGrpcConversation(conversation));
             });
         });
     }
@@ -57,7 +58,8 @@ export class ChatService {
         return new Promise((resolve, reject) => {
             chatClient.searchConversations(req, (error, result) => {
                 if (error) reject(error);
-                else resolve(result.getConversationsList());
+                else resolve(result.getConversationsList()
+                    .map(grpcConversation => Conversation.fromGrpcConversation(grpcConversation)));
             });
         });
     }
@@ -68,17 +70,17 @@ export class ChatService {
         return new Promise((resolve, reject) => {
             chatClient.findConversation(req, (error, conversation) => {
                 if (error) reject(error);
-                else resolve(conversation);
+                else resolve(Conversation.fromGrpcConversation(conversation));
             });
         });
     }
 
-    async createChatMessage(req: CreateChatMessageRequest): Promise<ChatMessage> {
+    async createChatMessage(req: CreateChatMessageRequest): Promise<Message> {
         let chatClient = await this.getChatClient();
         return new Promise((resolve, reject) => {
             chatClient.createChatMessage(req, (error, result) => {
                 if (error) reject(error);
-                else resolve(result);
+                else resolve(Message.fromGrpcMessage(result));
             });
         });
     }

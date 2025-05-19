@@ -1,7 +1,37 @@
 
 import { Args, Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { ConversationType, Conversation as GrpcConversation, ChatMessage as GqlChatMessage } from 'common-utils/protos/defs/chat_service_pb';
+import {
+    ConversationType,
+    Conversation as GrpcConversation,
+    ChatMessage as GrpcChatMessage,
+} from 'common-utils/protos/defs/chat_service_pb';
 import { User } from 'src/user/models/graphql.model';
+
+@ObjectType()
+export class Message {
+    @Field(type => ID)
+    id: string;
+
+    @Field()
+    conversation: Conversation;
+
+    @Field()
+    fromUser: User;
+
+    @Field()
+    content: string
+
+    @Field()
+    createdAt: string
+
+    static fromGrpcMessage(message: GrpcChatMessage): Message {
+        let conversation = new Message();
+        conversation.id = message.getId();
+        conversation.content = message.getContent();
+        conversation.createdAt = message.getCreatedAt()!.toDate().toISOString();
+        return conversation;
+    }
+}
 
 @ObjectType()
 export class Conversation {
@@ -15,11 +45,11 @@ export class Conversation {
     @Field(type => [User])
     members: User[]
 
-    @Field(type => [GqlChatMessage])
+    @Field(type => [Message])
     messages(
         @Args('messagePage', { type: () => Int }) messagePage: number,
         @Args('messageLimit', { type: () => Int }) messageLimit: number,
-    ): GqlChatMessage[] {
+    ): Message[] {
         // TODO: Implement by UserService
         return [];
     }
@@ -36,7 +66,7 @@ export class Conversation {
     @Field({ nullable: true })
     lastMessageAt: number
 
-    static fromGrpcGeneration(message: GrpcConversation): Conversation {
+    static fromGrpcConversation(message: GrpcConversation): Conversation {
         let conversation = new Conversation();
         conversation.id = message.getId();
         conversation.name = message.getName();
@@ -47,22 +77,4 @@ export class Conversation {
         conversation.lastMessageAt = new Date().getMilliseconds(); // FIXME: Adding to chat proto
         return conversation;
     }
-}
-
-@ObjectType()
-export class Message {
-    @Field(type => ID)
-    id: string;
-
-    @Field()
-    conversation: Conversation;
-
-    @Field()
-    fromUser: User;
-
-    @Field()
-    messageContent: string
-
-    @Field()
-    createdAt: number
 }

@@ -28,14 +28,14 @@ export class ChatGateway {
     ): Promise<SocketChatMessageResponse> {
         let chatMessageRequest = new CreateChatMessageRequest()
             .setConversationId(data.conversationId)
-            .setMessageContent(data.content)
+            .setContent(data.content)
             .setFromUserId(client.data.user.userId);
-        let chatMessage = await this.chatService.createChatMessage(chatMessageRequest);
+        let message = await this.chatService.createChatMessage(chatMessageRequest);
         return {
-            conversationId: chatMessage.getConversationId(),
-            content: chatMessage.getMessageContent(),
-            fromUserId: chatMessage.getFromUserId(),
-            createdAt: chatMessage.getCreatedAt()!.toDate().toISOString(),
+            conversationId: data.conversationId,
+            content: message.content,
+            fromUserId: client.data.user.userId,
+            createdAt: message.createdAt,
         };
     }
 }
