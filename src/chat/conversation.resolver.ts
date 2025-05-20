@@ -1,4 +1,4 @@
-import { Args, Context, ID, Mutation, Parent, ResolveField, Resolver, registerEnumType } from "@nestjs/graphql";
+import { Args, Context, ID, Int, Mutation, Parent, ResolveField, Resolver, registerEnumType } from "@nestjs/graphql";
 import { GatewayContext } from "src/app.module";
 import { ChatService } from "./chat.service";
 import { Conversation } from "./models/graphql.model";
@@ -38,7 +38,11 @@ export class ConversationResolver {
     }
 
     @Query(() => Conversation)
-    async conversation(@Args('id', { type: () => ID }) id: string): Promise<Conversation> {
+    async conversation(
+        @Args('id', { type: () => ID }) id: string,
+        @Args('messagePageNumber', { type: () => Int, defaultValue: 0 }) messagePageNumber: number,
+        @Args('messagePageSize', { type: () => Int, defaultValue: 20 }) messagePageSize: number
+    ): Promise<Conversation> {
         let req = new FindConversationRequest()
             .setConversationId(id);
         let conversation = this.chatService.findConversation(req);

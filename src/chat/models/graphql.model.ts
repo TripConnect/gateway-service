@@ -24,13 +24,7 @@ export class Conversation {
     members: User[]
 
     @Field(type => [Message])
-    messages(
-        @Args('messagePageNumber', { type: () => Int, defaultValue: 0 }) messagePageNumber: number,
-        @Args('messagePageSize', { type: () => Int, defaultValue: 20 }) messagePageSize: number,
-    ): Message[] {
-        // TODO: Implement by ChatService
-        return [];
-    }
+    messages: Message[]
 
     @Field(() => ConversationType)
     type: ConversationType

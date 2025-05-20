@@ -45,7 +45,7 @@ type Mutation {
 }
 
 type Query {
-  conversation(id: ID!): Conversation!
+  conversation(id: ID!, messagePageNumber: Int! = 0, messagePageSize: Int! = 20): Conversation!
   me: User!
   user(id: ID!): User!
   users(pageNumber: Int! = 0, pageSize: Int! = 20, searchTerm: String!): [User!]!
