@@ -19,7 +19,7 @@ export class ChatResolver {
     @Mutation(() => Conversation)
     async createConversation(
         @Context() context: GatewayContext,
-        @Args('name', { type: () => String }) name: string,
+        @Args('name', { type: () => String, nullable: true }) name: string,
         @Args('type', { type: () => ConversationType }) type: ConversationType,
         @Args('memberIds', { type: () => [String] }) members: string[],
     ): Promise<Conversation> {

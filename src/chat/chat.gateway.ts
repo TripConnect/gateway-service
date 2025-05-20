@@ -35,7 +35,7 @@ export class ChatGateway {
             conversationId: data.conversationId,
             content: message.content,
             fromUserId: client.data.user.userId,
-            createdAt: message.createdAt,
+            createdAt: message.createdAt.toISOString(),
         };
     }
 }

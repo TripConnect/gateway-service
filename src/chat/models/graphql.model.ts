@@ -39,10 +39,10 @@ export class Conversation {
     createdBy: User
 
     @Field()
-    createdAt: number
+    createdAt: Date
 
     @Field({ nullable: true })
-    lastMessageAt: number
+    lastMessageAt: Date
 
     static fromGrpcConversation(message: GrpcConversation): Conversation {
         let conversation = new Conversation();
@@ -51,8 +51,8 @@ export class Conversation {
         conversation.members = message.getMemberIdsList().map(userId => new User()); // TODO: Lazy fetching by UserService
         conversation.type = message.getType(); // TODO: Check whether that return enum name
         conversation.createdBy = new User(); // TODO: Lazy fetching by UserService
-        conversation.createdAt = message.getCreatedAt()!.toDate().getMilliseconds(); // FIXME: Change client side for number type
-        conversation.lastMessageAt = new Date().getMilliseconds(); // FIXME: Adding to chat proto
+        conversation.createdAt = message.getCreatedAt()!.toDate(); // FIXME: Change client side for number type
+        conversation.lastMessageAt = new Date(); // FIXME: Adding to chat proto
         return conversation;
     }
 }
@@ -72,13 +72,13 @@ export class Message {
     content: string
 
     @Field()
-    createdAt: string
+    createdAt: Date
 
     static fromGrpcMessage(message: GrpcChatMessage): Message {
         let conversation = new Message();
         conversation.id = message.getId();
         conversation.content = message.getContent();
-        conversation.createdAt = message.getCreatedAt()!.toDate().toISOString();
+        conversation.createdAt = message.getCreatedAt()!.toDate();
         return conversation;
     }
 }

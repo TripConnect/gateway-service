@@ -8,10 +8,10 @@ type AuthUser {
 }
 
 type Conversation {
-  createdAt: Float!
+  createdAt: DateTime!
   createdBy: User!
   id: ID!
-  lastMessageAt: Float
+  lastMessageAt: DateTime
   members: [User!]!
   messages: [Message!]!
   name: String!
@@ -24,16 +24,21 @@ enum ConversationType {
   PRIVATE
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Message {
   content: String!
   conversation: Conversation!
-  createdAt: String!
+  createdAt: DateTime!
   fromUser: User!
   id: ID!
 }
 
 type Mutation {
-  createConversation(memberIds: [String!]!, name: String!, type: ConversationType!): Conversation!
+  createConversation(memberIds: [String!]!, name: String, type: ConversationType!): Conversation!
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
   signin(otp: String! = "", password: String!, username: String!): AuthUser!
