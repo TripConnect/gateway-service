@@ -7,7 +7,33 @@ type AuthUser {
   userInfo: User!
 }
 
+type Conversation {
+  createdAt: Float!
+  createdBy: User!
+  id: ID!
+  lastMessageAt: Float
+  members: [User!]!
+  messages: [Message!]!
+  name: String!
+  type: ConversationType!
+}
+
+"""Type of conversation"""
+enum ConversationType {
+  GROUP
+  PRIVATE
+}
+
+type Message {
+  content: String!
+  conversation: Conversation!
+  createdAt: String!
+  fromUser: User!
+  id: ID!
+}
+
 type Mutation {
+  createConversation(memberIds: [String!]!, name: String!, type: ConversationType!): Conversation!
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
   signin(otp: String! = "", password: String!, username: String!): AuthUser!

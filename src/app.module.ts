@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { TwofaModule } from './twofa/twofa.module';
 import { TwofaResolver } from './twofa/twofa.resolver';
 import { ChatModule } from './chat/chat.module';
+import { ChatResolver } from './chat/chat.resolver';
 
 export interface GatewayContext {
   currentUserId: string | null;
@@ -37,6 +38,6 @@ export interface GatewayContext {
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [UserResolver, TwofaResolver],
+  providers: [UserResolver, TwofaResolver, ChatResolver],
 })
 export class AppModule { }
