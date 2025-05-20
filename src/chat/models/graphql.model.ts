@@ -48,7 +48,11 @@ export class Conversation {
         let conversation = new Conversation();
         conversation.id = message.getId();
         conversation.name = message.getName();
-        conversation.members = message.getMemberIdsList().map(userId => new User()); // TODO: Lazy fetching by UserService
+        conversation.members = message.getMemberIdsList().map(userId => {
+            let user = new User();
+            user.id = userId;
+            return user;
+        });
         conversation.type = message.getType(); // TODO: Check whether that return enum name
         conversation.createdBy = new User(); // TODO: Lazy fetching by UserService
         conversation.createdAt = message.getCreatedAt()!.toDate(); // FIXME: Change client side for number type
