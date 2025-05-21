@@ -11,6 +11,7 @@ import {
     FindConversationRequest,
     SearchConversationsRequest,
     CreateChatMessageRequest,
+    GetChatMessageRequest,
 } from 'common-utils/protos/defs/chat_service_pb';
 import { Conversation, Message } from './models/graphql.model';
 
@@ -81,6 +82,16 @@ export class ChatService {
             chatClient.createChatMessage(req, (error, result) => {
                 if (error) reject(error);
                 else resolve(Message.fromGrpcMessage(result));
+            });
+        });
+    }
+
+    async getChatMessages(req: GetChatMessageRequest): Promise<Message[]> {
+        let chatClient = await this.getChatClient();
+        return new Promise((resolve, reject) => {
+            chatClient.getChatMessages(req, (error, result) => {
+                if (error) reject(error);
+                else resolve(result.getMessagesList().map(grpcMessage => Message.fromGrpcMessage(grpcMessage)));
             });
         });
     }

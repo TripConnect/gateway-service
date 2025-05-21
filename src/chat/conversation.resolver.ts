@@ -1,8 +1,8 @@
 import { Args, Context, ID, Int, Mutation, Parent, ResolveField, Resolver, registerEnumType } from "@nestjs/graphql";
 import { GatewayContext } from "src/app.module";
 import { ChatService } from "./chat.service";
-import { Conversation } from "./models/graphql.model";
-import { ConversationType, CreateConversationRequest, FindConversationRequest } from "common-utils/protos/defs/chat_service_pb";
+import { Conversation, Message } from "./models/graphql.model";
+import { ConversationType, CreateConversationRequest, FindConversationRequest, GetChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
 import { User } from "src/user/models/graphql.model";
 import { UserService } from "src/user/user.service";
 import { GetUsersRequest } from "common-utils/protos/defs/user_service_pb";
@@ -38,11 +38,7 @@ export class ConversationResolver {
     }
 
     @Query(() => Conversation)
-    async conversation(
-        @Args('id', { type: () => ID }) id: string,
-        @Args('messagePageNumber', { type: () => Int, defaultValue: 0 }) messagePageNumber: number,
-        @Args('messagePageSize', { type: () => Int, defaultValue: 20 }) messagePageSize: number
-    ): Promise<Conversation> {
+    async conversation(@Args('id', { type: () => ID }) id: string): Promise<Conversation> {
         let req = new FindConversationRequest()
             .setConversationId(id);
         let conversation = this.chatService.findConversation(req);
@@ -54,6 +50,20 @@ export class ConversationResolver {
         let req = new GetUsersRequest()
             .setUserIdsList(conversation.members.map(m => m.id));
         const members = await this.userService.getUsers(req);
+        return members;
+    }
+
+    @ResolveField(() => [Message])
+    async messages(
+        @Parent() conversation: Conversation,
+        @Args('messagePageNumber', { type: () => Int, defaultValue: 0 }) messagePageNumber: number,
+        @Args('messagePageSize', { type: () => Int, defaultValue: 20 }) messagePageSize: number
+    ): Promise<Message[]> {
+        let req = new GetChatMessageRequest()
+            .setConversationId(conversation.id)
+            .setPageNumber(messagePageNumber)
+            .setPageSize(messagePageSize);
+        const members = await this.chatService.getChatMessages(req);
         return members;
     }
 }
