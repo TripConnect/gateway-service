@@ -2,7 +2,11 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { AuthenticatedInfo, UserInfo, Token as GrpcToken } from 'common-utils/protos/defs/user_service_pb';
 
 @ObjectType()
-export class User {
+export class Self {
+
+    constructor(init?: Partial<Self>) {
+        Object.assign(this, init);
+    }
 
     @Field(type => ID)
     id: string;
@@ -10,23 +14,46 @@ export class User {
     @Field()
     displayName: string;
 
+    // TODO: Using default avatar url at user-service
     @Field({ nullable: true })
-    avatar: string;
+    avatar?: string;
 
     @Field()
     enabledTwofa: boolean;
 
-    static fromGrpcUserInfo(message?: UserInfo): User {
-        if (!message) {
-            return new User();
-        }
+    static fromGrpcUserInfo(grpcUserInfo: UserInfo): Self {
+        return new Self({
+            id: grpcUserInfo.getId(),
+            displayName: grpcUserInfo.getDisplayName(),
+            avatar: grpcUserInfo.getAvatar(),
+            enabledTwofa: grpcUserInfo.getEnabledTwofa(),
+        });
+    }
+}
 
-        let user = new User();
-        user.id = message.getId();
-        user.displayName = message.getDisplayName();
-        user.avatar = message.getAvatar();
-        user.enabledTwofa = message.getEnabledTwofa();
-        return user;
+@ObjectType()
+export class User {
+
+    constructor(init?: Partial<User>) {
+        Object.assign(this, init);
+    }
+
+    @Field(type => ID)
+    id: string;
+
+    @Field()
+    displayName: string;
+
+    // TODO: Using default avatar url at user-service
+    @Field({ nullable: true })
+    avatar?: string;
+
+    static fromGrpcUserInfo(grpcUserInfo: UserInfo): User {
+        return new User({
+            id: grpcUserInfo.getId(),
+            displayName: grpcUserInfo.getDisplayName(),
+            avatar: grpcUserInfo.getAvatar(),
+        });
     }
 }
 
@@ -54,16 +81,20 @@ export class Token {
 @ObjectType()
 export class AuthUser {
 
-    @Field()
-    userInfo: User;
+    constructor(init?: Partial<AuthUser>) {
+        Object.assign(this, init);
+    }
 
-    @Field()
-    token: Token;
+    @Field({ nullable: true })
+    userInfo?: Self;
 
-    public static fromGrpcAuthInfo(message: AuthenticatedInfo): AuthUser {
-        let authUser = new AuthUser();
-        authUser.userInfo = User.fromGrpcUserInfo(message.getUserInfo());
-        authUser.token = Token.fromGrpcToken(message.getToken())
-        return authUser;
+    @Field({ nullable: true })
+    token?: Token;
+
+    public static fromGrpcAuthInfo(authenticatedInfo: AuthenticatedInfo): AuthUser {
+        return new AuthUser({
+            userInfo: authenticatedInfo.getUserInfo() ? Self.fromGrpcUserInfo(authenticatedInfo.getUserInfo() as UserInfo) : undefined,
+            token: authenticatedInfo.getToken() ? Token.fromGrpcToken(authenticatedInfo.getToken()) : undefined,
+        });
     }
 }

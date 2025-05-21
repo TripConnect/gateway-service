@@ -14,6 +14,10 @@ registerEnumType(ConversationType, {
 @ObjectType()
 export class Conversation {
 
+    constructor(init?: Partial<User>) {
+        Object.assign(this, init);
+    }
+
     @Field(type => ID)
     id: string;
 
@@ -36,7 +40,7 @@ export class Conversation {
     createdAt: Date
 
     @Field({ nullable: true })
-    lastMessageAt: Date
+    lastMessageAt?: Date
 
     static fromGrpcConversation(message: GrpcConversation): Conversation {
         let conversation = new Conversation();
@@ -57,6 +61,11 @@ export class Conversation {
 
 @ObjectType()
 export class Message {
+
+    constructor(init?: Partial<Message>) {
+        Object.assign(this, init);
+    }
+
     @Field(type => ID)
     id: string;
 
@@ -72,11 +81,15 @@ export class Message {
     @Field()
     createdAt: Date
 
-    static fromGrpcMessage(message: GrpcChatMessage): Message {
-        let conversation = new Message();
-        conversation.id = message.getId();
-        conversation.content = message.getContent();
-        conversation.createdAt = message.getCreatedAt()!.toDate();
-        return conversation;
+    static fromGrpcMessage(grpcMessage: GrpcChatMessage): Message {
+        let message = new Message();
+        message.id = grpcMessage.getId();
+        message.content = grpcMessage.getContent();
+        message.createdAt = grpcMessage.getCreatedAt()!.toDate();
+        message.fromUser = new User({
+            id: grpcMessage.getFromUserId(),
+        });
+
+        return message;
     }
 }

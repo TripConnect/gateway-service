@@ -5,7 +5,7 @@ import { Conversation, Message } from "./models/graphql.model";
 import { ConversationType, CreateConversationRequest, FindConversationRequest, GetChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
 import { User } from "src/user/models/graphql.model";
 import { UserService } from "src/user/user.service";
-import { GetUsersRequest } from "common-utils/protos/defs/user_service_pb";
+import { FindUserRequest, GetUsersRequest } from "common-utils/protos/defs/user_service_pb";
 import { Query } from "@nestjs/graphql";
 
 registerEnumType(ConversationType, {

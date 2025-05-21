@@ -3,8 +3,8 @@
 # ------------------------------------------------------
 
 type AuthUser {
-  token: Token!
-  userInfo: User!
+  token: Token
+  userInfo: Self
 }
 
 type Conversation {
@@ -55,6 +55,13 @@ type ResponseModel {
   status: Boolean!
 }
 
+type Self {
+  avatar: String
+  displayName: String!
+  enabledTwofa: Boolean!
+  id: ID!
+}
+
 type Settings {
   qrCode: String!
   secret: String!
@@ -68,6 +75,5 @@ type Token {
 type User {
   avatar: String
   displayName: String!
-  enabledTwofa: Boolean!
   id: ID!
 }

@@ -11,6 +11,7 @@ import { TwofaModule } from './twofa/twofa.module';
 import { TwofaResolver } from './twofa/twofa.resolver';
 import { ChatModule } from './chat/chat.module';
 import { ConversationResolver } from './chat/conversation.resolver';
+import { MessageResolver } from './chat/message.resolver';
 
 export interface GatewayContext {
   currentUserId: string | null;
@@ -38,6 +39,6 @@ export interface GatewayContext {
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [UserResolver, TwofaResolver, ConversationResolver],
+  providers: [UserResolver, TwofaResolver, ConversationResolver, MessageResolver],
 })
 export class AppModule { }
