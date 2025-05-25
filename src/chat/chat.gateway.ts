@@ -1,11 +1,16 @@
 import { UseGuards } from "@nestjs/common";
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from 'socket.io';
-import { WsAuthGuard } from "src/guards/socket.guard";
 import { CreateChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
 import { ChatService } from "./chat.service";
-import { SocketChatMessageRequest, SocketChatMessageEvent, SocketChatMessageResponse } from "./models/socket.model";
+import {
+    SocketChatMessageRequest,
+    SocketChatMessageEvent,
+    SocketChatMessageResponse,
+    SocketListenConversationRequest
+} from "./models/socket.model";
 import { TokenHelper } from "common-utils";
+import { WsAuthGuard } from "src/guards/socket.guard";
 
 
 @UseGuards(WsAuthGuard)
@@ -36,6 +41,22 @@ export class ChatGateway {
             console.error('Socket connection error:', err);
             client.disconnect();
         }
+    }
+
+    @SubscribeMessage('listen')
+    async listenRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() event: SocketListenConversationRequest
+    ) {
+        client.join(event.conversationId);
+    }
+
+    @SubscribeMessage('unlisten')
+    async unlistenRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() event: SocketListenConversationRequest
+    ) {
+        client.leave(event.conversationId);
     }
 
     @SubscribeMessage('message')

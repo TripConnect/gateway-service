@@ -12,3 +12,7 @@ export type SocketChatMessageEvent = {
     content: string,
     createdAt: string,
 }
+
+export type SocketListenConversationRequest = {
+    conversationId: string,
+}
