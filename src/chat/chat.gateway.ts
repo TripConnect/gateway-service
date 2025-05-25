@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { WsAuthGuard } from "src/guards/socket.guard";
 import { CreateChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
 import { ChatService } from "./chat.service";
-import { SocketChatMessageRequest, SocketChatMessageResponse } from "./models/socket.model";
+import { SocketChatMessageRequest, SocketChatMessageEvent, SocketChatMessageResponse } from "./models/socket.model";
 import { TokenHelper } from "common-utils";
 
 
@@ -41,18 +41,27 @@ export class ChatGateway {
     @SubscribeMessage('message')
     async handleChatMessage(
         @ConnectedSocket() client: Socket,
-        @MessageBody() data: SocketChatMessageRequest
+        @MessageBody() event: SocketChatMessageRequest
     ): Promise<SocketChatMessageResponse> {
-        let chatMessageRequest = new CreateChatMessageRequest()
-            .setConversationId(data.conversationId)
-            .setContent(data.content)
-            .setFromUserId(client.data.user.userId);
-        let message = await this.chatService.createChatMessage(chatMessageRequest);
-        return {
-            conversationId: data.conversationId,
-            content: message.content,
-            fromUserId: client.data.user.userId,
-            createdAt: message.createdAt.toISOString(),
-        };
+        try {
+            let chatMessageRequest = new CreateChatMessageRequest()
+                .setConversationId(event.conversationId)
+                .setContent(event.content)
+                .setFromUserId(client.data.user.userId);
+            let message = await this.chatService.createChatMessage(chatMessageRequest);
+
+            let emitEvent: SocketChatMessageEvent = {
+                content: message.content,
+                fromUserId: message.fromUser.id,
+                createdAt: message.createdAt.toISOString(),
+            }
+            client.to(event.conversationId).emit("message", emitEvent);
+
+            return {
+                status: "DONE",
+            };
+        } catch (error) {
+            return { status: "FAILED" }
+        }
     }
 }

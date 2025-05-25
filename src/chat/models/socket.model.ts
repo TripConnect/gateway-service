@@ -4,7 +4,10 @@ export type SocketChatMessageRequest = {
 }
 
 export type SocketChatMessageResponse = {
-    conversationId: string
+    status: 'DONE' | 'FAILED'
+}
+
+export type SocketChatMessageEvent = {
     fromUserId: string
     content: string,
     createdAt: string,
