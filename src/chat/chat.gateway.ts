@@ -48,6 +48,7 @@ export class ChatGateway {
         @ConnectedSocket() client: Socket,
         @MessageBody() event: SocketListenConversationRequest
     ) {
+        console.log(`user(${client.data.user.userId}) join conversation(${event.conversationId})`);
         client.join(event.conversationId);
     }
 
