@@ -7,6 +7,9 @@ import { User } from "src/user/models/graphql.model";
 import { UserService } from "src/user/user.service";
 import { FindUserRequest, GetUsersRequest } from "common-utils/protos/defs/user_service_pb";
 import { Query } from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
+import * as grpc from "@grpc/grpc-js";
+import { StatusCode } from "src/shared/status";
 
 registerEnumType(ConversationType, {
     name: "ConversationType",
@@ -41,7 +44,7 @@ export class ConversationResolver {
     async conversation(@Args('id', { type: () => ID }) id: string): Promise<Conversation> {
         let req = new FindConversationRequest()
             .setConversationId(id);
-        let conversation = this.chatService.findConversation(req);
+        let conversation = await this.chatService.findConversation(req);
         return conversation;
     }
 
