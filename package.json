@@ -33,6 +33,7 @@
     "common-utils": "github:TripConnect/common-utils",
     "google-protobuf": "^3.21.4",
     "graphql": "^16.10.0",
+    "node-proto-lib": "github:TripConnect/node-proto-lib",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.1"

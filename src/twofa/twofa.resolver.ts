@@ -1,9 +1,9 @@
 import { Args, Context, Mutation, Resolver } from "@nestjs/graphql";
-import { FindUserRequest } from "common-utils/protos/defs/user_service_pb";
+import { FindUserRequest } from "node-proto-lib/protos/user_service_pb";
 import { GatewayContext } from "src/app.module";
 import { Settings } from "./models/graphql.model";
 import { TwofaService } from "./twofa.service";
-import { Generate2faRequest, Create2faRequest } from "common-utils/protos/defs/twofa_service_pb";
+import { Generate2faRequest, Create2faRequest } from "node-proto-lib/protos/twofa_service_pb";
 import { UserService } from "src/user/user.service";
 import { ResponseModel } from "src/shared/models/response.model";
 

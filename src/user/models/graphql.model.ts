@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { AuthenticatedInfo, UserInfo, Token as GrpcToken } from 'common-utils/protos/defs/user_service_pb';
+import { AuthenticatedInfo, UserInfo, Token as GrpcToken } from 'node-proto-lib/protos/user_service_pb';
 
 @ObjectType()
 export class Self {

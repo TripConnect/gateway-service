@@ -3,7 +3,7 @@ import {
     ConversationType,
     Conversation as GrpcConversation,
     ChatMessage as GrpcChatMessage,
-} from 'common-utils/protos/defs/chat_service_pb';
+} from 'node-proto-lib/protos/chat_service_pb';
 import { User } from 'src/user/models/graphql.model';
 
 registerEnumType(ConversationType, {

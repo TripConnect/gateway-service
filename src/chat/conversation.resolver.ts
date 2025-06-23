@@ -1,15 +1,14 @@
-import { Args, Context, ID, Int, Mutation, Parent, ResolveField, Resolver, registerEnumType } from "@nestjs/graphql";
+import { Args, Context, GraphQLISODateTime, ID, Int, Mutation, Parent, ResolveField, Resolver, registerEnumType } from "@nestjs/graphql";
 import { GatewayContext } from "src/app.module";
 import { ChatService } from "./chat.service";
 import { Conversation, Message } from "./models/graphql.model";
-import { ConversationType, CreateConversationRequest, FindConversationRequest, GetChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
+import { ConversationType, CreateConversationRequest, FindConversationRequest } from "node-proto-lib/protos/chat_service_pb";
 import { User } from "src/user/models/graphql.model";
 import { UserService } from "src/user/user.service";
-import { FindUserRequest, GetUsersRequest } from "common-utils/protos/defs/user_service_pb";
+import { GetUsersRequest } from "node-proto-lib/protos//user_service_pb";
 import { Query } from "@nestjs/graphql";
-import { GraphQLError } from "graphql";
-import * as grpc from "@grpc/grpc-js";
-import { StatusCode } from "src/shared/status";
+import { GetChatMessagesRequest } from "node-proto-lib/protos/chat_service_pb";
+import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 
 registerEnumType(ConversationType, {
     name: "ConversationType",
@@ -59,13 +58,15 @@ export class ConversationResolver {
     @ResolveField(() => [Message])
     async messages(
         @Parent() conversation: Conversation,
-        @Args('messagePageNumber', { type: () => Int, defaultValue: 0 }) messagePageNumber: number,
-        @Args('messagePageSize', { type: () => Int, defaultValue: 20 }) messagePageSize: number
+        @Args('messageBefore', { type: () => GraphQLISODateTime, nullable: true }) messageBefore: Date,
+        @Args('messageAfter', { type: () => GraphQLISODateTime, nullable: true }) messageAfter: Date,
+        @Args('messageLimit', { type: () => Int, defaultValue: 20 }) messageLimit: number
     ): Promise<Message[]> {
-        let req = new GetChatMessageRequest()
+        let req = new GetChatMessagesRequest()
             .setConversationId(conversation.id)
-            .setPageNumber(messagePageNumber)
-            .setPageSize(messagePageSize);
+            .setBefore(new Timestamp().fromDate(messageBefore))
+            .setAfter(new Timestamp().fromDate(messageAfter))
+            .setLimit(messageLimit);
         const members = await this.chatService.getChatMessages(req);
         return members;
     }

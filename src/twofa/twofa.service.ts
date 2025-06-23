@@ -1,10 +1,10 @@
 import * as grpc from '@grpc/grpc-js';
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from '@nestjs/config';
-import { DiscoveryServiceClient } from "common-utils/protos/defs/discovery_service_grpc_pb";
-import { DiscoveryRequest } from "common-utils/protos/defs/discovery_service_pb";
-import { TwoFactorAuthenticationServiceClient } from 'common-utils/protos/defs/twofa_service_grpc_pb';
-import { Create2faRequest, Generate2faRequest, Validate2faRequest } from 'common-utils/protos/defs/twofa_service_pb';
+import { DiscoveryServiceClient } from "node-proto-lib/protos/discovery_service_grpc_pb";
+import { DiscoveryRequest } from "node-proto-lib/protos/discovery_service_pb";
+import { TwoFactorAuthenticationServiceClient } from 'node-proto-lib/protos/twofa_service_grpc_pb';
+import { Create2faRequest, Generate2faRequest, Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
 import { Settings, Validation } from './models/graphql.model';
 import { ResponseModel } from 'src/shared/models/response.model';
 

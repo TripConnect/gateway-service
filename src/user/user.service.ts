@@ -5,10 +5,10 @@ import {
     FindUserRequest,
     SearchUserRequest,
     GetUsersRequest,
-} from 'common-utils/protos/defs/user_service_pb';
-import { UserServiceClient } from 'common-utils/protos/defs/user_service_grpc_pb';
-import { DiscoveryServiceClient } from 'common-utils/protos/defs/discovery_service_grpc_pb';
-import { DiscoveryRequest } from 'common-utils/protos/defs/discovery_service_pb';
+} from 'node-proto-lib/protos/user_service_pb';
+import { UserServiceClient } from 'node-proto-lib/protos/user_service_grpc_pb';
+import { DiscoveryServiceClient } from 'node-proto-lib/protos/discovery_service_grpc_pb';
+import { DiscoveryRequest } from 'node-proto-lib/protos/discovery_service_pb';
 import { ConfigService } from '@nestjs/config';
 import { AuthUser, User } from './models/graphql.model';
 

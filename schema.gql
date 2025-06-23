@@ -13,7 +13,7 @@ type Conversation {
   id: ID!
   lastMessageAt: DateTime
   members: [User!]!
-  messages(messagePageNumber: Int! = 0, messagePageSize: Int! = 20): [Message!]!
+  messages(messageAfter: DateTime, messageBefore: DateTime, messageLimit: Int! = 20): [Message!]!
   name: String!
   type: ConversationType!
 }

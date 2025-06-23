@@ -1,18 +1,16 @@
 import * as grpc from '@grpc/grpc-js';
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from '@nestjs/config';
-import { DiscoveryServiceClient } from "common-utils/protos/defs/discovery_service_grpc_pb";
-import { DiscoveryRequest } from "common-utils/protos/defs/discovery_service_pb";
-import { ChatServiceClient } from 'common-utils/protos/defs/chat_service_grpc_pb';
+import { DiscoveryServiceClient } from "node-proto-lib/protos/discovery_service_grpc_pb";
+import { DiscoveryRequest } from "node-proto-lib/protos/discovery_service_pb";
+import { ChatServiceClient } from 'node-proto-lib/protos/chat_service_grpc_pb';
 import {
-    ChatMessage as GrpcChatMessage,
-    Conversation as GrpcConversation,
     CreateConversationRequest,
     FindConversationRequest,
     SearchConversationsRequest,
     CreateChatMessageRequest,
-    GetChatMessageRequest,
-} from 'common-utils/protos/defs/chat_service_pb';
+    GetChatMessagesRequest,
+} from 'node-proto-lib/protos/chat_service_pb';
 import { Conversation, Message } from './models/graphql.model';
 
 @Injectable()
@@ -86,7 +84,7 @@ export class ChatService {
         });
     }
 
-    async getChatMessages(req: GetChatMessageRequest): Promise<Message[]> {
+    async getChatMessages(req: GetChatMessagesRequest): Promise<Message[]> {
         let chatClient = await this.getChatClient();
         return new Promise((resolve, reject) => {
             chatClient.getChatMessages(req, (error, result) => {

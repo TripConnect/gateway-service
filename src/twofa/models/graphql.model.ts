@@ -1,6 +1,6 @@
 
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Generate2faResponse, Validate2faResponse } from 'common-utils/protos/defs/twofa_service_pb';
+import { Generate2faResponse, Validate2faResponse } from 'node-proto-lib/protos/twofa_service_pb';
 
 @ObjectType()
 export class Settings {
@@ -32,7 +32,7 @@ export class Validation {
     static fromGrpcValidation(message: Validate2faResponse): Validation {
         let validation = new Validation();
         validation.success = message.getSuccess();
-        validation.status = message.getStatus();
+        validation.status = message.getStatus().toString();
         return validation;
     }
 }

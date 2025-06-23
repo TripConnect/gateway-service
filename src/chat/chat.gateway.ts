@@ -1,7 +1,7 @@
 import { UseGuards } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from 'socket.io';
-import { CreateChatMessageRequest } from "common-utils/protos/defs/chat_service_pb";
+import { CreateChatMessageRequest } from "node-proto-lib/protos/chat_service_pb";
 import { ChatService } from "./chat.service";
 import {
     SocketChatMessageRequest,
