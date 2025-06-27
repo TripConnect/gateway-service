@@ -1,4 +1,4 @@
-name: Gateway service pipeline
+name: Development pipeline
 
 on: 
   push:
