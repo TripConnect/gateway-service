@@ -10,6 +10,6 @@ RUN pnpm install
 
 RUN npm run build
 
-CMD ["node", "dist/application.js"]
+CMD ["node", "dist/main.js"]
 
 EXPOSE 31071
