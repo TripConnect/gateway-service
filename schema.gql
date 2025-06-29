@@ -12,8 +12,8 @@ type Conversation {
   createdBy: User!
   id: ID!
   lastMessageAt: DateTime
-  members: [User!]!
-  messages(messageAfter: DateTime, messageBefore: DateTime, messageLimit: Int! = 20): [Message!]!
+  members(pageNumber: Int!, pageSize: Int!): [User!]!
+  messages(messageAfter: DateTime, messageBefore: DateTime, messageLimit: Int!): [Message!]!
   name: String!
   type: ConversationType!
 }

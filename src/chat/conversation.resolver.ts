@@ -48,7 +48,12 @@ export class ConversationResolver {
     }
 
     @ResolveField(() => [User])
-    async members(@Parent() conversation: Conversation): Promise<User[]> {
+    async members(
+        @Parent() conversation: Conversation,
+        @Args('pageNumber', { type: () => Int }) pageNumber: number,
+        @Args('pageSize', { type: () => Int }) pageSize: number,
+    ): Promise<User[]> {
+        // TODO: Get conv members with pagination
         let req = new GetUsersRequest()
             .setUserIdsList(conversation.members.map(m => m.id));
         const members = await this.userService.getUsers(req);
@@ -60,12 +65,12 @@ export class ConversationResolver {
         @Parent() conversation: Conversation,
         @Args('messageBefore', { type: () => GraphQLISODateTime, nullable: true }) messageBefore: Date,
         @Args('messageAfter', { type: () => GraphQLISODateTime, nullable: true }) messageAfter: Date,
-        @Args('messageLimit', { type: () => Int, defaultValue: 20 }) messageLimit: number
+        @Args('messageLimit', { type: () => Int }) messageLimit: number
     ): Promise<Message[]> {
         let req = new GetChatMessagesRequest()
             .setConversationId(conversation.id)
-            .setBefore(new Timestamp().fromDate(messageBefore))
-            .setAfter(new Timestamp().fromDate(messageAfter))
+            .setBefore(messageBefore && new Timestamp().fromDate(messageBefore))
+            .setAfter(messageAfter && new Timestamp().fromDate(messageAfter))
             .setLimit(messageLimit);
         const members = await this.chatService.getChatMessages(req);
         return members;
