@@ -49,7 +49,7 @@ importers:
         version: 16.10.0
       node-proto-lib:
         specifier: github:TripConnect/node-proto-lib
-        version: https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/1b41ed334fa7dab3061022f6665acb03cb413349
+        version: https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/a37becfdd327dec3467e625eefbc4f94fd81a803
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -3084,8 +3084,8 @@ packages:
   node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
 
-  node-proto-lib@https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/1b41ed334fa7dab3061022f6665acb03cb413349:
-    resolution: {tarball: https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/1b41ed334fa7dab3061022f6665acb03cb413349}
+  node-proto-lib@https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/a37becfdd327dec3467e625eefbc4f94fd81a803:
+    resolution: {tarball: https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/a37becfdd327dec3467e625eefbc4f94fd81a803}
     version: 1.0.0
 
   node-releases@2.0.19:
@@ -7404,7 +7404,7 @@ snapshots:
 
   node-int64@0.4.0: {}
 
-  node-proto-lib@https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/1b41ed334fa7dab3061022f6665acb03cb413349: {}
+  node-proto-lib@https://codeload.github.com/TripConnect/node-proto-lib/tar.gz/a37becfdd327dec3467e625eefbc4f94fd81a803: {}
 
   node-releases@2.0.19: {}
 
