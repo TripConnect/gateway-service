@@ -14,7 +14,7 @@ registerEnumType(ConversationType, {
 @ObjectType()
 export class Conversation {
 
-    constructor(init?: Partial<User>) {
+    constructor(init?: Partial<Conversation>) {
         Object.assign(this, init);
     }
 
