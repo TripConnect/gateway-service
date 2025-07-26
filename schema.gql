@@ -41,18 +41,18 @@ type Mutation {
   createConversation(memberIds: [String!]!, name: String, type: ConversationType!): Conversation!
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
-  signin(otp: String! = "", password: String!, username: String!): AuthUser!
+  signIn(otp: String! = "", password: String!, username: String!): AuthUser!
 }
 
 type Query {
   conversation(id: ID!): Conversation!
-  me: User!
+  me: Self!
   user(id: ID!): User!
   users(pageNumber: Int! = 0, pageSize: Int! = 20, searchTerm: String!): [User!]!
 }
 
 type ResponseModel {
-  status: Boolean!
+  success: Boolean!
 }
 
 type Self {

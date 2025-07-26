@@ -2,11 +2,10 @@ import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class ResponseModel {
+  @Field()
+  success: boolean;
 
-    @Field()
-    status: boolean;
-
-    constructor(status: boolean) {
-        this.status = status;
-    }
+  constructor(status: boolean) {
+    this.success = status;
+  }
 }
