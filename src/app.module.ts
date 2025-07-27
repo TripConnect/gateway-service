@@ -26,19 +26,32 @@ export interface GatewayContext {
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
       sortSchema: true,
-      context: ({ req, res }: { req: Request, res: Response }): GatewayContext => {
-        let accessToken = req.headers.authorization?.split(" ")?.[1] as string;
-        let jwtBody = TokenHelper.verify(accessToken);
+      context: ({
+        req,
+        res,
+      }: {
+        req: Request;
+        res: Response;
+      }): GatewayContext => {
+        const accessToken = req.headers.authorization?.split(
+          ' ',
+        )?.[1] as string;
+        const jwtBody = TokenHelper.verify(accessToken);
         return {
-          currentUserId: jwtBody?.userId || null
-        }
-      }
+          currentUserId: jwtBody?.userId || null,
+        };
+      },
     }),
     UserModule,
     TwofaModule,
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [UserResolver, TwofaResolver, ConversationResolver, MessageResolver],
+  providers: [
+    UserResolver,
+    TwofaResolver,
+    ConversationResolver,
+    MessageResolver,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

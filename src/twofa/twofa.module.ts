@@ -4,8 +4,8 @@ import { TwofaService } from './twofa.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-    imports: [ConfigModule, UserModule],
-    providers: [TwofaService],
-    exports: [TwofaService],
+  imports: [ConfigModule, UserModule],
+  providers: [TwofaService],
+  exports: [TwofaService],
 })
-export class TwofaModule { }
+export class TwofaModule {}

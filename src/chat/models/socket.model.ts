@@ -1,18 +1,18 @@
 export type SocketChatMessageRequest = {
-    conversationId: string
-    content: string
-}
+  conversationId: string;
+  content: string;
+};
 
 export type SocketChatMessageResponse = {
-    status: 'DONE' | 'FAILED'
-}
+  status: 'DONE' | 'FAILED';
+};
 
 export type SocketChatMessageEvent = {
-    fromUserId: string
-    content: string,
-    createdAt: string,
-}
+  fromUserId: string;
+  content: string;
+  createdAt: string;
+};
 
 export type SocketListenConversationRequest = {
-    conversationId: string,
-}
+  conversationId: string;
+};

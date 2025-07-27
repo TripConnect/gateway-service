@@ -7,6 +7,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.useGlobalFilters(new GrpcExceptionFilter());
-  await app.listen(ConfigHelper.read("server.port"));
+  await app.listen(ConfigHelper.read('server.port'));
 }
 bootstrap();

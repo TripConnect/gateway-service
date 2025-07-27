@@ -11,7 +11,7 @@ export class Self {
     Object.assign(this, init);
   }
 
-  @Field(type => ID)
+  @Field((type) => ID)
   id: string;
 
   @Field()
@@ -40,7 +40,7 @@ export class User {
     Object.assign(this, init);
   }
 
-  @Field(type => ID)
+  @Field((type) => ID)
   id: string;
 
   @Field()

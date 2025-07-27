@@ -4,8 +4,8 @@ import { ChatService } from './chat.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-    imports: [ConfigModule],
-    providers: [ChatService, ChatGateway],
-    exports: [ChatService],
+  imports: [ConfigModule],
+  providers: [ChatService, ChatGateway],
+  exports: [ChatService],
 })
-export class ChatModule { }
+export class ChatModule {}
