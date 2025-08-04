@@ -4,7 +4,7 @@ export type SocketChatMessageRequest = {
 };
 
 export type SocketChatMessageResponse = {
-  status: 'DONE' | 'FAILED';
+  status: 'SUCCESS' | 'FAILED';
 };
 
 export type SocketChatMessageEvent = {

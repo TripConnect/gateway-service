@@ -1,15 +1,9 @@
-import {
-  Args,
-  Field,
-  ID,
-  Int,
-  ObjectType,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
   ConversationType,
   Conversation as GrpcConversation,
   ChatMessage as GrpcChatMessage,
+  CreateChatMessageAck as GrpcCreateChatMessageAck,
 } from 'node-proto-lib/protos/chat_service_pb';
 import { User } from 'src/user/models/graphql.model';
 
@@ -96,5 +90,23 @@ export class Message {
     });
 
     return message;
+  }
+}
+
+@ObjectType()
+export class SendMessageAck {
+  constructor(init?: Partial<SendMessageAck>) {
+    Object.assign(this, init);
+  }
+
+  @Field()
+  correlationId: string;
+
+  static fromGrpcMessage(
+    grpcMessage: GrpcCreateChatMessageAck,
+  ): SendMessageAck {
+    return new SendMessageAck({
+      correlationId: grpcMessage.getCorrelationId(),
+    });
   }
 }

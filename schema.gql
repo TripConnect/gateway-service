@@ -41,6 +41,7 @@ type Mutation {
   createConversation(memberIds: [String!]!, name: String, type: ConversationType!): Conversation!
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
+  sendMessage(content: String!, conversation_id: ID!): SendMessageAck!
   signIn(otp: String! = "", password: String!, username: String!): AuthUser!
 }
 
@@ -60,6 +61,10 @@ type Self {
   displayName: String!
   enabledTwofa: Boolean!
   id: ID!
+}
+
+type SendMessageAck {
+  correlationId: String!
 }
 
 type Settings {

@@ -11,7 +11,7 @@ import {
   CreateChatMessageRequest,
   GetChatMessagesRequest,
 } from 'node-proto-lib/protos/chat_service_pb';
-import { Conversation, Message } from './models/graphql.model';
+import { Conversation, Message, SendMessageAck } from './models/graphql.model';
 
 @Injectable()
 export class ChatService {
@@ -89,12 +89,15 @@ export class ChatService {
     });
   }
 
-  async createChatMessage(req: CreateChatMessageRequest): Promise<Message> {
+  async sendChatMessage(
+    req: CreateChatMessageRequest,
+  ): Promise<SendMessageAck> {
     const chatClient = await this.getChatClient();
+
     return new Promise((resolve, reject) => {
-      chatClient.createChatMessage(req, (error, result) => {
+      chatClient.createChatMessage(req, (error, ack) => {
         if (error) reject(error);
-        else resolve(Message.fromGrpcMessage(result));
+        else resolve(SendMessageAck.fromGrpcMessage(ack));
       });
     });
   }
