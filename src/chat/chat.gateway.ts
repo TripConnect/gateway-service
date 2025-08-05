@@ -29,7 +29,7 @@ export class ChatGateway {
   handleConnection(client: Socket) {
     const { token } = client.handshake.auth;
     try {
-      const payload = TokenHelper.verify(token);
+      const payload = TokenHelper.verify(token as string);
       if (!payload) {
         console.log('Socket rejected: Invalid token');
         return client.disconnect();
