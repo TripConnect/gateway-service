@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -19,6 +19,7 @@ import { WsAuthGuard } from 'src/guards/socket.guard';
     origin: '*',
   },
 })
+@Injectable()
 export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
 
