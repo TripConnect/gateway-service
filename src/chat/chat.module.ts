@@ -4,6 +4,7 @@ import { ChatService } from './chat.service';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { KAFKA_BROKERS } from '../shared/kafka';
+import { KafkaConsumer } from './kafka.consumer';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { KAFKA_BROKERS } from '../shared/kafka';
       },
     ]),
   ],
+  controllers: [KafkaConsumer],
   providers: [ChatService, ChatGateway],
   exports: [ChatService],
 })

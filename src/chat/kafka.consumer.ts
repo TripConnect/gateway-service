@@ -1,16 +1,13 @@
-import {
-  Ctx,
-  EventPattern,
-  KafkaContext,
-  Payload,
-} from '@nestjs/microservices';
+import { Payload, MessagePattern } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
 import { ConfigHelper } from 'common-utils';
 
+@Controller()
 export class KafkaConsumer {
-  @EventPattern(
+  @MessagePattern(
     ConfigHelper.read('kafka.topic.chatting-fct-sent-message') as string,
   )
-  async handleEvent(@Payload() data, @Ctx() context: KafkaContext) {
-    console.info(data);
+  handleEvent(@Payload() data) {
+    console.log(data);
   }
 }
