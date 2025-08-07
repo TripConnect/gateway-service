@@ -20,7 +20,7 @@ import {
 } from 'node-proto-lib/protos/chat_service_pb';
 import { User } from 'src/user/models/graphql.model';
 import { UserService } from 'src/user/user.service';
-import { GetUsersRequest } from 'node-proto-lib/protos//user_service_pb';
+import { GetUsersRequest } from 'node-proto-lib/protos/user_service_pb';
 import { Query } from '@nestjs/graphql';
 import { GetChatMessagesRequest } from 'node-proto-lib/protos/chat_service_pb';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
