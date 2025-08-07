@@ -2,31 +2,12 @@ import { Module } from '@nestjs/common';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { ConfigModule } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { KAFKA_BROKERS } from '../shared/kafka';
-import { KafkaConsumer } from './kafka.consumer';
+import { KafkaModule } from '../kafka/kafka.module';
+import { ChatConsumer } from './chat.consumer';
 
 @Module({
-  imports: [
-    ConfigModule,
-    ClientsModule.register([
-      {
-        name: 'CHAT_SERVICE',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: 'chatting',
-            brokers: KAFKA_BROKERS,
-          },
-          consumer: {
-            groupId: 'gateway-service',
-          },
-        },
-      },
-    ]),
-  ],
-  controllers: [KafkaConsumer],
-  providers: [ChatService, ChatGateway],
+  imports: [ConfigModule, KafkaModule],
+  providers: [ChatService, ChatGateway, ChatConsumer],
   exports: [ChatService],
 })
 export class ChatModule {}

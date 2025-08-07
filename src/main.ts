@@ -1,27 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { GrpcExceptionFilter } from './shared/filter';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { ConfigHelper } from 'common-utils';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.KAFKA,
-      options: {
-        client: {
-          clientId: 'gateway',
-          brokers: ['localhost:9092'],
-        },
-        consumer: {
-          groupId: 'gateway-service',
-        },
-      },
-    },
-  );
-
+  const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalFilters(new GrpcExceptionFilter());
-
-  void app.listen();
+  await app.listen(ConfigHelper.read('server.port') as number);
 }
 void bootstrap();
