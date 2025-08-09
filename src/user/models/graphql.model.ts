@@ -17,9 +17,8 @@ export class Self {
   @Field()
   displayName: string;
 
-  // TODO: Using default avatar url at user-service
-  @Field({ nullable: true })
-  avatar?: string;
+  @Field()
+  avatar: string;
 
   @Field()
   enabledTwofa: boolean;

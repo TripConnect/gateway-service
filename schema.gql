@@ -57,7 +57,7 @@ type ResponseModel {
 }
 
 type Self {
-  avatar: String
+  avatar: String!
   displayName: String!
   enabledTwofa: Boolean!
   id: ID!
