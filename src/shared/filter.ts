@@ -16,6 +16,8 @@ export class GrpcExceptionFilter implements GqlExceptionFilter {
   }
 
   catch(exception: any, host: ArgumentsHost) {
+    console.error(host, exception);
+
     if (exception instanceof GraphQLError) {
       return exception;
     }
