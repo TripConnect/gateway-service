@@ -35,6 +35,7 @@ type Message {
   createdAt: DateTime!
   fromUser: User!
   id: ID!
+  sentTime: DateTime!
 }
 
 type Mutation {
@@ -78,7 +79,7 @@ type Token {
 }
 
 type User {
-  avatar: String
+  avatar: String!
   displayName: String!
   id: ID!
 }

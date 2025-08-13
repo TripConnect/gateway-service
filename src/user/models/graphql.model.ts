@@ -45,9 +45,8 @@ export class User {
   @Field()
   displayName: string;
 
-  // TODO: Using default avatar url at user-service
-  @Field({ nullable: true })
-  avatar?: string;
+  @Field()
+  avatar: string;
 
   static fromGrpcUserInfo(grpcUserInfo: UserInfo): User {
     return new User({

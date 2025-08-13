@@ -32,6 +32,7 @@
     "@nestjs/platform-express": "^11.1.5",
     "@nestjs/platform-socket.io": "^11.1.5",
     "@nestjs/websockets": "^11.1.5",
+    "@types/google-protobuf": "^3.15.12",
     "common-utils": "github:TripConnect/common-utils",
     "google-protobuf": "^3.21.4",
     "graphql": "^16.11.0",

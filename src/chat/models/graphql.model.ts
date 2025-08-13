@@ -78,13 +78,17 @@ export class Message {
   content: string;
 
   @Field()
+  sentTime: Date;
+
+  @Field()
   createdAt: Date;
 
   static fromGrpcMessage(grpcMessage: GrpcChatMessage): Message {
     const message = new Message();
     message.id = grpcMessage.getId();
     message.content = grpcMessage.getContent();
-    message.createdAt = grpcMessage.getCreatedAt()!.toDate();
+    message.sentTime = grpcMessage.getSentTime()!.toDate();
+    message.createdAt = grpcMessage.getCreateTime()!.toDate();
     message.fromUser = new User({
       id: grpcMessage.getFromUserId(),
     });

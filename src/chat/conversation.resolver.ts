@@ -6,9 +6,10 @@ import {
   Int,
   Mutation,
   Parent,
+  Query,
+  registerEnumType,
   ResolveField,
   Resolver,
-  registerEnumType,
 } from '@nestjs/graphql';
 import { GatewayContext } from 'src/app.module';
 import { ChatService } from './chat.service';
@@ -17,12 +18,11 @@ import {
   ConversationType,
   CreateConversationRequest,
   FindConversationRequest,
+  GetChatMessagesRequest,
 } from 'node-proto-lib/protos/chat_service_pb';
 import { User } from 'src/user/models/graphql.model';
 import { UserService } from 'src/user/user.service';
 import { GetUsersRequest } from 'node-proto-lib/protos/user_service_pb';
-import { Query } from '@nestjs/graphql';
-import { GetChatMessagesRequest } from 'node-proto-lib/protos/chat_service_pb';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 
 registerEnumType(ConversationType, {
@@ -49,8 +49,7 @@ export class ConversationResolver {
       .setType(type)
       .setMemberIdsList(members)
       .setOwnerId(context.currentUserId as string);
-    const conversation = this.chatService.createConversation(req);
-    return conversation;
+    return this.chatService.createConversation(req);
   }
 
   @Query(() => Conversation)
@@ -58,8 +57,7 @@ export class ConversationResolver {
     @Args('id', { type: () => ID }) id: string,
   ): Promise<Conversation> {
     const req = new FindConversationRequest().setConversationId(id);
-    const conversation = await this.chatService.findConversation(req);
-    return conversation;
+    return await this.chatService.findConversation(req);
   }
 
   @ResolveField(() => [User])
@@ -72,25 +70,33 @@ export class ConversationResolver {
     const req = new GetUsersRequest().setUserIdsList(
       conversation.members.map((m) => m.id),
     );
-    const members = await this.userService.getUsers(req);
-    return members;
+    return await this.userService.getUsers(req);
   }
 
   @ResolveField(() => [Message])
   async messages(
     @Parent() conversation: Conversation,
-    @Args('messageBefore', { type: () => GraphQLISODateTime, nullable: true })
+    @Args('messageBefore', {
+      type: () => GraphQLISODateTime,
+      nullable: true,
+    })
     messageBefore: Date,
-    @Args('messageAfter', { type: () => GraphQLISODateTime, nullable: true })
+    @Args('messageAfter', {
+      type: () => GraphQLISODateTime,
+      nullable: true,
+    })
     messageAfter: Date,
     @Args('messageLimit', { type: () => Int }) messageLimit: number,
   ): Promise<Message[]> {
     const req = new GetChatMessagesRequest()
       .setConversationId(conversation.id)
-      .setBefore(messageBefore && new Timestamp().fromDate(messageBefore))
-      .setAfter(messageAfter && new Timestamp().fromDate(messageAfter))
+      .setBefore(
+        messageBefore ? Timestamp.fromDate(messageBefore) : undefined,
+      )
+      .setAfter(
+        messageAfter ? Timestamp.fromDate(messageAfter) : undefined
+      )
       .setLimit(messageLimit);
-    const members = await this.chatService.getChatMessages(req);
-    return members;
+    return await this.chatService.getChatMessages(req);
   }
 }
