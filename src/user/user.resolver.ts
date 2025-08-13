@@ -19,6 +19,8 @@ import { AuthUser, Self, User } from './models/graphql.model';
 import { TwofaService } from 'src/twofa/twofa.service';
 import { Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
 import { StatusCode } from 'src/shared/status';
+import { Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Resolver()
 export class UserResolver {
@@ -29,28 +31,46 @@ export class UserResolver {
 
   @Mutation(() => AuthUser)
   async signIn(
+    @Res({ passthrough: true }) response: Response,
     @Args('username', { type: () => String }) username: string,
     @Args('password', { type: () => String }) password: string,
     @Args('otp', { type: () => String, defaultValue: '' }) otp: string,
   ): Promise<AuthUser> {
-    const req = new SignInRequest().setUsername(username).setPassword(password);
+    const req = new SignInRequest()
+      .setUsername(username)
+      .setPassword(password);
     const authenticatedInfo = await this.userService.signIn(req);
 
-    if (!authenticatedInfo.userInfo?.enabledTwofa) return authenticatedInfo;
+    if(authenticatedInfo.userInfo?.enabledTwofa) {
+      const validateReq = new Validate2faRequest()
+        .setResourceId(authenticatedInfo.userInfo.id)
+        .setOtp(otp);
+      const secondFactorResp = await this.twofaService.validateTwofa(validateReq);
+      if(!secondFactorResp.success) {
+        throw new GraphQLError('Two-factor authentication required', {
+          extensions: {
+            code: StatusCode.MULTI_FACTOR_REQUIRED,
+          },
+        });
+      }
+    }
 
-    const validateReq = new Validate2faRequest()
-      .setResourceId(authenticatedInfo.userInfo.id)
-      .setOtp(otp);
-
-    const secondFactorResp = await this.twofaService.validateTwofa(validateReq);
-
-    if (secondFactorResp.success) return authenticatedInfo;
-
-    throw new GraphQLError('Two-factor authentication required', {
-      extensions: {
-        code: StatusCode.MULTI_FACTOR_REQUIRED,
-      },
+    response.cookie('accessToken', authenticatedInfo.token.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
     });
+    response.cookie('refreshToken', authenticatedInfo.token.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return authenticatedInfo;
   }
 
   @Query(() => Self)
