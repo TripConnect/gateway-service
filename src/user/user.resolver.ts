@@ -19,8 +19,7 @@ import { AuthUser, Self, User } from './models/graphql.model';
 import { TwofaService } from 'src/twofa/twofa.service';
 import { Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
 import { StatusCode } from 'src/shared/status';
-import { Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../guards/auth.guard';
 
 @Resolver()
@@ -32,7 +31,7 @@ export class UserResolver {
 
   @Mutation(() => AuthUser)
   async signIn(
-    @Res({ passthrough: true }) response: Response,
+    @Context() context: GatewayContext,
     @Args('username', { type: () => String }) username: string,
     @Args('password', { type: () => String }) password: string,
     @Args('otp', { type: () => String, nullable: true, defaultValue: '' })
@@ -56,14 +55,14 @@ export class UserResolver {
       }
     }
 
-    response.cookie('accessToken', authenticatedInfo.token.accessToken, {
+    context.res.cookie('accessToken', authenticatedInfo.token.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
-    response.cookie('refreshToken', authenticatedInfo.token.refreshToken, {
+    context.res.cookie('refreshToken', authenticatedInfo.token.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

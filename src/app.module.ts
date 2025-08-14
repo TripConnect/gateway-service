@@ -14,6 +14,8 @@ import { ConversationResolver } from './chat/conversation.resolver';
 import { MessageResolver } from './chat/message.resolver';
 
 export interface GatewayContext {
+  req: Request;
+  res: Response;
   currentUserId: string | null;
 }
 
@@ -38,6 +40,8 @@ export interface GatewayContext {
         )?.[1] as string;
         const jwtBody = TokenHelper.verify(accessToken);
         return {
+          req,
+          res,
           currentUserId: jwtBody?.userId || null,
         };
       },
