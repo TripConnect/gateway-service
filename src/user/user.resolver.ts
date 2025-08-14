@@ -9,13 +9,14 @@ import {
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import {
+  AuthenticatedInfo,
   FindUserRequest,
   SearchUserRequest,
   SignInRequest,
 } from 'node-proto-lib/protos/user_service_pb';
 import { GraphQLError } from 'graphql';
 import { GatewayContext } from 'src/app.module';
-import { AuthUser, Self, User } from './models/graphql.model';
+import { AuthUser, Self, Token, User } from './models/graphql.model';
 import { TwofaService } from 'src/twofa/twofa.service';
 import { Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
 import { StatusCode } from 'src/shared/status';
@@ -37,23 +38,30 @@ export class UserResolver {
     @Args('otp', { type: () => String, nullable: true, defaultValue: '' })
     otp: string,
   ): Promise<AuthUser> {
-    const req = new SignInRequest().setUsername(username).setPassword(password);
-    const authenticatedInfo = await this.userService.signIn(req);
+    // const req = new SignInRequest().setUsername(username).setPassword(password);
+    // const authenticatedInfo = await this.userService.signIn(req);
 
-    if (authenticatedInfo.userInfo?.enabledTwofa) {
-      const validateReq = new Validate2faRequest()
-        .setResourceId(authenticatedInfo.userInfo.id)
-        .setOtp(otp);
-      const secondFactorResp =
-        await this.twofaService.validateTwofa(validateReq);
-      if (!secondFactorResp.success) {
-        throw new GraphQLError('Two-factor authentication required', {
-          extensions: {
-            code: StatusCode.MULTI_FACTOR_REQUIRED,
-          },
-        });
-      }
-    }
+    // if (authenticatedInfo.userInfo?.enabledTwofa) {
+    //   const validateReq = new Validate2faRequest()
+    //     .setResourceId(authenticatedInfo.userInfo.id)
+    //     .setOtp(otp);
+    //   const secondFactorResp =
+    //     await this.twofaService.validateTwofa(validateReq);
+    //   if (!secondFactorResp.success) {
+    //     throw new GraphQLError('Two-factor authentication required', {
+    //       extensions: {
+    //         code: StatusCode.MULTI_FACTOR_REQUIRED,
+    //       },
+    //     });
+    //   }
+    // }
+
+    // DEBUG START
+    const authenticatedInfo = new AuthUser();
+    authenticatedInfo.token = new Token();
+    authenticatedInfo.token.accessToken = "foo";
+    authenticatedInfo.token.accessToken = "bar";
+    // DEBUG END
 
     context.res.cookie('accessToken', authenticatedInfo.token.accessToken, {
       httpOnly: true,
