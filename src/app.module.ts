@@ -22,6 +22,7 @@ export interface GatewayContext {
 @Module({
   imports: [
     ConfigModule.forRoot({
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       load: [ConfigHelper.readAll],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
