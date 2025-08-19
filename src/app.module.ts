@@ -36,9 +36,7 @@ export interface GatewayContext {
         req: Request;
         res: Response;
       }): GatewayContext => {
-        const accessToken = req.headers.authorization?.split(
-          ' ',
-        )?.[1] as string;
+        const accessToken = req.cookies['access_token'] as string;
         const jwtBody = TokenHelper.verify(accessToken);
         return {
           req,

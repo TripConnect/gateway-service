@@ -55,14 +55,14 @@ export class UserResolver {
       }
     }
 
-    context.res.cookie('accessToken', authenticatedInfo.token.accessToken, {
+    context.res.cookie('access_token', authenticatedInfo.token.accessToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
-    context.res.cookie('refreshToken', authenticatedInfo.token.refreshToken, {
+    context.res.cookie('refresh_token', authenticatedInfo.token.refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
