@@ -7,7 +7,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatService } from './chat.service';
 import { SocketListenConversationRequest } from './models/socket.model';
 import { TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
@@ -21,22 +20,28 @@ import { WsAuthGuard } from 'src/guards/socket.guard';
 })
 @Injectable()
 export class ChatGateway {
-  constructor(private readonly chatService: ChatService) {}
+  constructor() {}
 
   @WebSocketServer()
   server: Server;
 
   handleConnection(client: Socket) {
-    const { token } = client.handshake.auth;
+    const cookies = Object.fromEntries(
+      client.handshake.headers.cookie!.split('; ').map((c) => {
+        const [key, ...v] = c.split('=');
+        return [key, v.join('=')];
+      }),
+    );
+    const token = cookies['access_token'];
     try {
-      const payload = TokenHelper.verify(token as string);
-      if (!payload) {
+      const jwtBody = TokenHelper.verify(token);
+      if (!jwtBody) {
         console.log('Socket rejected: Invalid token');
         return client.disconnect();
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      client.data.user = payload;
-      console.log('Socket connected:', payload.userId);
+      client.data.user = jwtBody;
+      console.log('Socket connected:', jwtBody.userId);
     } catch (err) {
       console.error('Socket connection error:', err);
       client.disconnect();
