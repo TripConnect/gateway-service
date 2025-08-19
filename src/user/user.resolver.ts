@@ -57,15 +57,15 @@ export class UserResolver {
 
     context.res.cookie('accessToken', authenticatedInfo.token.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+      secure: true,
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
     context.res.cookie('refreshToken', authenticatedInfo.token.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+      secure: true,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     });
