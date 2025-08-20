@@ -43,7 +43,7 @@ type Mutation {
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
   sendMessage(content: String!, conversation_id: ID!): SendMessageAck!
-  signIn(otp: String! = "", password: String!, username: String!): AuthUser!
+  signIn(otp: String = "", password: String!, username: String!): AuthUser!
 }
 
 type Query {

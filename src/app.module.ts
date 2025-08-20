@@ -14,12 +14,15 @@ import { ConversationResolver } from './chat/conversation.resolver';
 import { MessageResolver } from './chat/message.resolver';
 
 export interface GatewayContext {
+  req: Request;
+  res: Response;
   currentUserId: string | null;
 }
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       load: [ConfigHelper.readAll],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -33,11 +36,11 @@ export interface GatewayContext {
         req: Request;
         res: Response;
       }): GatewayContext => {
-        const accessToken = req.headers.authorization?.split(
-          ' ',
-        )?.[1] as string;
+        const accessToken = req.cookies['access_token'] as string;
         const jwtBody = TokenHelper.verify(accessToken);
         return {
+          req,
+          res,
           currentUserId: jwtBody?.userId || null,
         };
       },
