@@ -10,6 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { SocketListenConversationRequest } from './models/socket.model';
 import { TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
+import { extractCookies } from './common/cookie';
 
 @UseGuards(WsAuthGuard)
 @WebSocketGateway({
@@ -26,12 +27,8 @@ export class ChatGateway {
   server: Server;
 
   handleConnection(client: Socket) {
-    const cookies = Object.fromEntries(
-      client.handshake.headers.cookie!.split('; ').map((c) => {
-        const [key, ...v] = c.split('=');
-        return [key, v.join('=')];
-      }),
-    );
+    const cookies = extractCookies(client.handshake.headers.cookie as string);
+
     const token = cookies['access_token'];
     try {
       const jwtBody = TokenHelper.verify(token);

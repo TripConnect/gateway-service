@@ -24,6 +24,8 @@ import { User } from 'src/user/models/graphql.model';
 import { UserService } from 'src/user/user.service';
 import { GetUsersRequest } from 'node-proto-lib/protos/user_service_pb';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../guards/auth.guard';
 
 registerEnumType(ConversationType, {
   name: 'ConversationType',
@@ -38,6 +40,7 @@ export class ConversationResolver {
   ) {}
 
   @Mutation(() => Conversation)
+  @UseGuards(GqlAuthGuard)
   async createConversation(
     @Context() context: GatewayContext,
     @Args('name', { type: () => String, nullable: true }) name: string,
@@ -53,6 +56,7 @@ export class ConversationResolver {
   }
 
   @Query(() => Conversation)
+  @UseGuards(GqlAuthGuard)
   async conversation(
     @Args('id', { type: () => ID }) id: string,
   ): Promise<Conversation> {
@@ -61,6 +65,7 @@ export class ConversationResolver {
   }
 
   @ResolveField(() => [User])
+  @UseGuards(GqlAuthGuard)
   async members(
     @Parent() conversation: Conversation,
     @Args('pageNumber', { type: () => Int }) pageNumber: number,
@@ -74,6 +79,7 @@ export class ConversationResolver {
   }
 
   @ResolveField(() => [Message])
+  @UseGuards(GqlAuthGuard)
   async messages(
     @Parent() conversation: Conversation,
     @Args('messageBefore', {

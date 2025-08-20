@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { TokenHelper } from 'common-utils';
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
+import { extractCookies } from '../chat/common/cookie';
 
 @Injectable()
 export class WsAuthGuard implements CanActivate {
@@ -9,7 +10,8 @@ export class WsAuthGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const client = context.switchToWs().getClient<Socket>();
-    const token = client.handshake.headers.cookie?.['access_token'] as string;
+    const cookies = extractCookies(client.handshake.headers.cookie as string);
+    const token = cookies['access_token'];
 
     try {
       const payload = TokenHelper.verify(token);
