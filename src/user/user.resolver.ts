@@ -12,6 +12,7 @@ import {
   FindUserRequest,
   SearchUserRequest,
   SignInRequest,
+  SignUpRequest,
 } from 'node-proto-lib/protos/user_service_pb';
 import { GatewayContext } from 'src/app.module';
 import { AuthUser, Self, User } from './models/graphql.model';
@@ -71,6 +72,16 @@ export class UserResolver {
     });
 
     return authenticatedInfo;
+  }
+
+  @Mutation(() => AuthUser)
+  async signUp(
+    @Context() context: GatewayContext,
+    @Args('username', { type: () => String }) username: string,
+    @Args('password', { type: () => String }) password: string,
+  ): Promise<AuthUser> {
+    const req = new SignUpRequest().setUsername(username).setPassword(password);
+    return await this.userService.signUp(req);
   }
 
   @Query(() => Self)

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as grpc from '@grpc/grpc-js';
 import {
-  SignInRequest,
   FindUserRequest,
-  SearchUserRequest,
   GetUsersRequest,
+  SearchUserRequest,
+  SignInRequest,
+  SignUpRequest,
 } from 'node-proto-lib/protos/user_service_pb';
 import { UserServiceClient } from 'node-proto-lib/protos/user_service_grpc_pb';
 import { DiscoveryServiceClient } from 'node-proto-lib/protos/discovery_service_grpc_pb';
@@ -18,28 +19,13 @@ export class UserService {
 
   constructor(private configService: ConfigService) {}
 
-  private async getUserClient(): Promise<UserServiceClient> {
-    if (UserService.userClient) return UserService.userClient;
+  async signUp(req: SignUpRequest): Promise<AuthUser> {
+    const userClient = await this.getUserClient();
 
     return new Promise((resolve, reject) => {
-      const discoveryClient = new DiscoveryServiceClient(
-        this.configService.get<string>('discovery.address') as string,
-        grpc.credentials.createInsecure(),
-      );
-      const discoverRequest = new DiscoveryRequest().setServiceName(
-        'user-service',
-      );
-      discoveryClient.discover(discoverRequest, (error, resp) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(
-            new UserServiceClient(
-              `${resp.getHost()}:${resp.getPort()}`,
-              grpc.credentials.createInsecure(),
-            ),
-          );
-        }
+      userClient.signUp(req, (error, userInfo) => {
+        if (error) reject(error);
+        else resolve(AuthUser.fromGrpcAuthInfo(userInfo));
       });
     });
   }
@@ -105,6 +91,32 @@ export class UserService {
               .getUsersList()
               .map((userInfo) => User.fromGrpcUserInfo(userInfo)),
           );
+      });
+    });
+  }
+
+  private async getUserClient(): Promise<UserServiceClient> {
+    if (UserService.userClient) return UserService.userClient;
+
+    return new Promise((resolve, reject) => {
+      const discoveryClient = new DiscoveryServiceClient(
+        this.configService.get<string>('discovery.address') as string,
+        grpc.credentials.createInsecure(),
+      );
+      const discoverRequest = new DiscoveryRequest().setServiceName(
+        'user-service',
+      );
+      discoveryClient.discover(discoverRequest, (error, resp) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(
+            new UserServiceClient(
+              `${resp.getHost()}:${resp.getPort()}`,
+              grpc.credentials.createInsecure(),
+            ),
+          );
+        }
       });
     });
   }

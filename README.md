@@ -7,7 +7,7 @@ The gateway service, entry point of backend services
 Starting up system infrastructure
 ```sh
 cd infra-specs # Clone if not already
-docker-compose -f k8s/local/docker-compose.yml up --force-recreate # Create up all system infrastructures
+docker-compose -f infra/local/docker-compose.yml up --force-recreate # Create up all system infrastructures
 ```
 ### Service
 Precondition: `config-service`, `discovery-service`  
