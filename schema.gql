@@ -44,6 +44,7 @@ type Mutation {
   generate2FASecret: Settings!
   sendMessage(content: String!, conversation_id: ID!): SendMessageAck!
   signIn(otp: String = "", password: String!, username: String!): AuthUser!
+  signOut: ResponseModel!
   signUp(password: String!, username: String!): AuthUser!
 }
 

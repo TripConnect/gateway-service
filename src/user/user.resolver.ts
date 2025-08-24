@@ -22,6 +22,7 @@ import { GqlAuthGuard } from '../guards/auth.guard';
 import { StatusCode } from '../shared/status';
 import { GraphQLError } from 'graphql';
 import { Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
+import { ResponseModel } from '../shared/models/response.model';
 
 @Resolver()
 export class UserResolver {
@@ -82,6 +83,14 @@ export class UserResolver {
   ): Promise<AuthUser> {
     const req = new SignUpRequest().setUsername(username).setPassword(password);
     return await this.userService.signUp(req);
+  }
+
+  @Mutation(() => ResponseModel)
+  @UseGuards(GqlAuthGuard)
+  signOut(@Context() context: GatewayContext): ResponseModel {
+    context.res.clearCookie('access_token');
+    context.res.clearCookie('refresh_token');
+    return new ResponseModel(true);
   }
 
   @Query(() => Self)
