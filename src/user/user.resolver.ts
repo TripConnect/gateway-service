@@ -80,8 +80,12 @@ export class UserResolver {
     @Context() context: GatewayContext,
     @Args('username', { type: () => String }) username: string,
     @Args('password', { type: () => String }) password: string,
+    @Args('displayName', { type: () => String }) displayName: string,
   ): Promise<AuthUser> {
-    const req = new SignUpRequest().setUsername(username).setPassword(password);
+    const req = new SignUpRequest()
+      .setUsername(username)
+      .setPassword(password)
+      .setDisplayName(displayName);
     return await this.userService.signUp(req);
   }
 

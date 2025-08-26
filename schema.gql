@@ -45,7 +45,7 @@ type Mutation {
   sendMessage(content: String!, conversation_id: ID!): SendMessageAck!
   signIn(otp: String = "", password: String!, username: String!): AuthUser!
   signOut: ResponseModel!
-  signUp(password: String!, username: String!): AuthUser!
+  signUp(displayName: String!, password: String!, username: String!): AuthUser!
 }
 
 type Query {
