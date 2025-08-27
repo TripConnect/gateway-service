@@ -3,3 +3,4 @@ tools
 .env*
 .vscode
 log
+media/live/*

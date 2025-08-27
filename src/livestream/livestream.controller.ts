@@ -6,10 +6,8 @@ import {
   Param,
   Post,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GqlAuthGuard } from '../guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LivestreamService } from './livestream.service';
 
@@ -25,15 +23,13 @@ export class LivestreamController {
   }
 
   @Post('/:livestreamId/status')
-  @UseGuards(GqlAuthGuard)
   checkStatus(@Param('livestreamId') livestreamId: string): any {
     return {
       isLive: this.livestreamService.isLive(livestreamId),
     };
   }
 
-  @Post()
-  @UseGuards(GqlAuthGuard)
+  @Post('/segment')
   @UseInterceptors(FileInterceptor('segment'))
   async uploadSegment(
     @UploadedFile() file: Express.Multer.File,
@@ -56,4 +52,34 @@ export class LivestreamController {
       );
     }
   }
+
+  // @Get('/:livestreamId/:file(*)')
+  // async proxyHls(
+  //   @Param('livestreamId') streamKey: string,
+  //   @Param('file') file: string,
+  //   @Res() res: Response,
+  // ) {
+  //   const filePath = join(
+  //     __dirname,
+  //     '..',
+  //     '..',
+  //     'media',
+  //     'live',
+  //     streamKey,
+  //     file,
+  //   );
+  //   try {
+  //     const stream = createReadStream(filePath);
+  //     const contentType = file.endsWith('.m3u8')
+  //       ? 'application/vnd.apple.mpegurl'
+  //       : 'video/MP2T';
+  //     res.setHeader('Content-Type', contentType);
+  //     stream.on('error', () => {
+  //       res.status(404).send('File not found');
+  //     });
+  //     stream.pipe(res);
+  //   } catch (error) {
+  //     res.status(500).send('Error serving file');
+  //   }
+  // }
 }
