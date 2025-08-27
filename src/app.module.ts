@@ -12,6 +12,7 @@ import { TwofaResolver } from './twofa/twofa.resolver';
 import { ChatModule } from './chat/chat.module';
 import { ConversationResolver } from './chat/conversation.resolver';
 import { MessageResolver } from './chat/message.resolver';
+import { LivestreamModule } from './livestream/livestream.module';
 
 export interface GatewayContext {
   req: Request;
@@ -48,6 +49,7 @@ export interface GatewayContext {
     UserModule,
     TwofaModule,
     ChatModule,
+    LivestreamModule,
   ],
   controllers: [AppController],
   providers: [

@@ -96,12 +96,8 @@ export class ConversationResolver {
   ): Promise<Message[]> {
     const req = new GetChatMessagesRequest()
       .setConversationId(conversation.id)
-      .setBefore(
-        messageBefore ? Timestamp.fromDate(messageBefore) : undefined,
-      )
-      .setAfter(
-        messageAfter ? Timestamp.fromDate(messageAfter) : undefined
-      )
+      .setBefore(messageBefore ? Timestamp.fromDate(messageBefore) : undefined)
+      .setAfter(messageAfter ? Timestamp.fromDate(messageAfter) : undefined)
       .setLimit(messageLimit);
     return await this.chatService.getChatMessages(req);
   }
