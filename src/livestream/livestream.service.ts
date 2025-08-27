@@ -8,7 +8,7 @@ export class LivestreamService {
   private activeStreams: Map<string, { process: any; tempFile: string }> =
     new Map();
 
-  async processChunk(chunk: Buffer, livestreamId: string): Promise<void> {
+  async processSegment(chunk: Buffer, livestreamId: string): Promise<void> {
     const streamDir = join(
       __dirname,
       '..',
@@ -64,7 +64,7 @@ export class LivestreamService {
     // Get the FFmpeg process
     const stream = this.activeStreams.get(livestreamId);
     if (!stream) {
-      throw new Error('Stream not initialized');
+      throw new Error('Livestream not initialized');
     }
 
     // Pipe chunk to FFmpeg stdin
@@ -72,12 +72,16 @@ export class LivestreamService {
     stream.process.stdin.write(chunk);
   }
 
-  endStream(streamKey: string): void {
-    const stream = this.activeStreams.get(streamKey);
+  endLive(livestreamId: string): void {
+    const stream = this.activeStreams.get(livestreamId);
     if (stream) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       stream.process.stdin.end();
-      this.activeStreams.delete(streamKey);
+      this.activeStreams.delete(livestreamId);
     }
+  }
+
+  isLive(livestreamId: string): boolean {
+    return this.activeStreams.has(livestreamId);
   }
 }

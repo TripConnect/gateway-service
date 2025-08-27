@@ -3,6 +3,7 @@ import {
   Controller,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   UploadedFile,
   UseGuards,
@@ -12,9 +13,9 @@ import { GqlAuthGuard } from '../guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LivestreamService } from './livestream.service';
 
-@Controller('/livestream')
+@Controller('/livestreams')
 export class LivestreamController {
-  constructor(private readonly streamsService: LivestreamService) {}
+  constructor(private readonly livestreamService: LivestreamService) {}
 
   @Post()
   createNewOne(): any {
@@ -23,11 +24,11 @@ export class LivestreamController {
     };
   }
 
-  @Post()
+  @Post('/:livestreamId/status')
   @UseGuards(GqlAuthGuard)
-  checkStatus(): any {
+  checkStatus(@Param('livestreamId') livestreamId: string): any {
     return {
-      isLive: true,
+      isLive: this.livestreamService.isLive(livestreamId),
     };
   }
 
@@ -46,11 +47,11 @@ export class LivestreamController {
     }
 
     try {
-      await this.streamsService.processChunk(file.buffer, livestreamId);
+      await this.livestreamService.processSegment(file.buffer, livestreamId);
       return { message: 'Chunk processed successfully' };
     } catch (error) {
       throw new HttpException(
-        `Failed to process chunk: ${error}`,
+        `Failed to process segment: ${error}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
