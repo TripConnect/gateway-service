@@ -1,15 +1,20 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LivestreamService } from './livestream.service';
+import { join } from 'path';
+import { Response } from 'express';
+import { createReadStream, existsSync } from 'fs';
 
 @Controller('/livestreams')
 export class LivestreamController {
@@ -53,33 +58,41 @@ export class LivestreamController {
     }
   }
 
-  // @Get('/:livestreamId/:file(*)')
-  // async proxyHls(
-  //   @Param('livestreamId') streamKey: string,
-  //   @Param('file') file: string,
-  //   @Res() res: Response,
-  // ) {
-  //   const filePath = join(
-  //     __dirname,
-  //     '..',
-  //     '..',
-  //     'media',
-  //     'live',
-  //     streamKey,
-  //     file,
-  //   );
-  //   try {
-  //     const stream = createReadStream(filePath);
-  //     const contentType = file.endsWith('.m3u8')
-  //       ? 'application/vnd.apple.mpegurl'
-  //       : 'video/MP2T';
-  //     res.setHeader('Content-Type', contentType);
-  //     stream.on('error', () => {
-  //       res.status(404).send('File not found');
-  //     });
-  //     stream.pipe(res);
-  //   } catch (error) {
-  //     res.status(500).send('Error serving file');
-  //   }
-  // }
+  @Get('/:livestreamId/*')
+  serveHlsFile(
+    @Param('livestreamId') livestreamId: string,
+    @Res() res: Response,
+  ) {
+    const fileName = res.req.url.split('/').pop();
+    const filePath = join(
+      __dirname,
+      '..',
+      '..',
+      'media',
+      'live',
+      livestreamId,
+      fileName as string,
+    );
+    if (!existsSync(filePath)) {
+      throw new HttpException(
+        `File ${fileName} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    res.setHeader(
+      'Content-Type',
+      filePath.endsWith('.m3u8')
+        ? 'application/vnd.apple.mpegurl'
+        : 'video/mp2t',
+    );
+    const fileStream = createReadStream(filePath);
+    fileStream.on('error', () => {
+      res.status(HttpStatus.NOT_FOUND).send({
+        message: `File ${fileName} not found`,
+        error: 'Not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    });
+    fileStream.pipe(res);
+  }
 }

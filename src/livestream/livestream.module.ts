@@ -15,5 +15,6 @@ import { LivestreamService } from './livestream.service';
   ],
   controllers: [LivestreamController],
   providers: [LivestreamService],
+  exports: [LivestreamService],
 })
 export class LivestreamModule {}
