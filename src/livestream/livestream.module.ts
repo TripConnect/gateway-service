@@ -3,9 +3,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { LivestreamController } from './livestream.controller';
 import { LivestreamService } from './livestream.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     MulterModule.register({
       storage: memoryStorage(), // Store files in memory for direct piping to FFmpeg
       limits: {

@@ -2,11 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 import { spawn } from 'child_process';
+import { Livestream } from './models/graphql.model';
 
 @Injectable()
 export class LivestreamService {
   private activeStreams: Map<string, { process: any; tempFile: string }> =
     new Map();
+
+  async getActiveLivestreams(): Promise<Livestream[]> {
+    return Array.from(this.activeStreams.keys()).map(
+      (livestreamId) =>
+        new Livestream({
+          id: livestreamId,
+          createdBy: '',
+          hlsLink: `/livestreams/${livestreamId}/index.m3u8`,
+        }),
+    );
+  }
 
   async processSegment(chunk: Buffer, livestreamId: string): Promise<void> {
     const streamDir = join(

@@ -114,14 +114,17 @@ export class UserResolver {
 
   @Query(() => [User])
   async users(
-    @Args('searchTerm', { type: () => String }) searchTerm: string,
-    @Args('pageNumber', { type: () => Int, defaultValue: 0 }) page: number,
-    @Args('pageSize', { type: () => Int, defaultValue: 20 }) limit: number,
+    @Args('searchTerm', { type: () => String })
+    searchTerm: string,
+    @Args('pageNumber', { type: () => Int, defaultValue: 0 })
+    pageNumber: number,
+    @Args('pageSize', { type: () => Int, defaultValue: 20 })
+    pageSize: number,
   ): Promise<User[]> {
     const req = new SearchUserRequest()
       .setTerm(searchTerm)
-      .setPageNumber(page)
-      .setPageSize(limit);
+      .setPageNumber(pageNumber)
+      .setPageSize(pageSize);
     const user = await this.userService.searchUsers(req);
     return user;
   }

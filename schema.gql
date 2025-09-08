@@ -29,6 +29,12 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Livestream {
+  createdBy: String!
+  hlsLink: String!
+  id: ID!
+}
+
 type Message {
   content: String!
   conversation: Conversation!
@@ -40,6 +46,7 @@ type Message {
 
 type Mutation {
   createConversation(memberIds: [String!]!, name: String, type: ConversationType!): Conversation!
+  createLivestream: Livestream!
   enable2FA(otp: String!, secret: String!): ResponseModel!
   generate2FASecret: Settings!
   sendMessage(content: String!, conversation_id: ID!): SendMessageAck!
@@ -50,6 +57,7 @@ type Mutation {
 
 type Query {
   conversation(id: ID!): Conversation!
+  livestreams(pageNumber: Int! = 0, pageSize: Int! = 20): [Livestream!]!
   me: Self!
   user(id: ID!): User!
   users(pageNumber: Int! = 0, pageSize: Int! = 20, searchTerm: String!): [User!]!

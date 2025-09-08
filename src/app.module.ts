@@ -13,6 +13,7 @@ import { ChatModule } from './chat/chat.module';
 import { ConversationResolver } from './chat/conversation.resolver';
 import { MessageResolver } from './chat/message.resolver';
 import { LivestreamModule } from './livestream/livestream.module';
+import { LivestreamResolver } from './livestream/livestream.resolver';
 
 export interface GatewayContext {
   req: Request;
@@ -57,6 +58,7 @@ export interface GatewayContext {
     TwofaResolver,
     ConversationResolver,
     MessageResolver,
+    LivestreamResolver,
   ],
 })
 export class AppModule {}
