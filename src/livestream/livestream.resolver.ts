@@ -33,13 +33,21 @@ export class LivestreamResolver {
   // @UseGuards(GqlAuthGuard)
   @Query(() => [Livestream])
   async livestreams(
-    @Args('searchTerm', { type: () => String })
+    @Args('searchTerm', {
+      type: () => String,
+      nullable: true,
+      defaultValue: '',
+    })
     searchTerm: string,
-    @Args('status', { type: () => String, defaultValue: 0 })
+    @Args('status', {
+      type: () => String,
+      nullable: true,
+      defaultValue: '',
+    })
     status: string,
-    @Args('pageNumber', { type: () => Int, defaultValue: 0 })
+    @Args('pageNumber', { type: () => Int })
     pageNumber: number,
-    @Args('pageSize', { type: () => Int, defaultValue: 20 })
+    @Args('pageSize', { type: () => Int })
     pageSize: number,
   ): Promise<Livestream[]> {
     const req = new SearchLivestreamsRequest()
