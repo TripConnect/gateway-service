@@ -3,21 +3,46 @@ import { join } from 'path';
 import { promises as fs } from 'fs';
 import { spawn } from 'child_process';
 import { Livestream } from './models/graphql.model';
+import { ConfigService } from '@nestjs/config';
+import { DiscoveryServiceClient } from 'node-proto-lib/protos/discovery_service_grpc_pb';
+import * as grpc from '@grpc/grpc-js';
+import { DiscoveryRequest } from 'node-proto-lib/protos/discovery_service_pb';
+import { LivestreamServiceClient } from 'node-proto-lib/protos/livestream_service_grpc_pb';
+import { SearchLivestreamsRequest } from 'node-proto-lib/protos/livestream_service_pb';
 
 @Injectable()
 export class LivestreamService {
+  private static stub: LivestreamServiceClient;
   private activeStreams: Map<string, { process: any; tempFile: string }> =
     new Map();
 
-  async getActiveLivestreams(): Promise<Livestream[]> {
-    return Array.from(this.activeStreams.keys()).map(
-      (livestreamId) =>
-        new Livestream({
-          id: livestreamId,
-          createdBy: '',
-          hlsLink: `/livestreams/${livestreamId}/index.m3u8`,
-        }),
-    );
+  constructor(private configService: ConfigService) {}
+
+  // async getActiveLivestreams(): Promise<Livestream[]> {
+  //   return Array.from(this.activeStreams.keys()).map(
+  //     (livestreamId) =>
+  //       new Livestream({
+  //         id: livestreamId,
+  //         createdBy: '',
+  //         hlsLink: `/livestreams/${livestreamId}/index.m3u8`,
+  //       }),
+  //   );
+  // }
+
+  async searchLivestream(req: SearchLivestreamsRequest): Promise<Livestream[]> {
+    const stub = await this.getStub();
+
+    return new Promise((resolve, reject) => {
+      stub.searchLivestream(req, (error, livestreams) => {
+        if (error) reject(error);
+        else
+          resolve(
+            livestreams
+              .getLivestreamsList()
+              .map((livestream) => Livestream.fromGrpc(livestream)),
+          );
+      });
+    });
   }
 
   async processSegment(chunk: Buffer, livestreamId: string): Promise<void> {
@@ -95,5 +120,31 @@ export class LivestreamService {
 
   isLive(livestreamId: string): boolean {
     return this.activeStreams.has(livestreamId);
+  }
+
+  private async getStub(): Promise<LivestreamServiceClient> {
+    if (LivestreamService.stub) return LivestreamService.stub;
+
+    return new Promise((resolve, reject) => {
+      const discoveryClient = new DiscoveryServiceClient(
+        this.configService.get<string>('discovery.address') as string,
+        grpc.credentials.createInsecure(),
+      );
+      const discoverRequest = new DiscoveryRequest().setServiceName(
+        'livestream-service',
+      );
+      discoveryClient.discover(discoverRequest, (error, resp) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(
+            new LivestreamServiceClient(
+              `${resp.getHost()}:${resp.getPort()}`,
+              grpc.credentials.createInsecure(),
+            ),
+          );
+        }
+      });
+    });
   }
 }

@@ -57,7 +57,7 @@ type Mutation {
 
 type Query {
   conversation(id: ID!): Conversation!
-  livestreams(pageNumber: Int! = 0, pageSize: Int! = 20): [Livestream!]!
+  livestreams(pageNumber: Int! = 0, pageSize: Int! = 20, searchTerm: String!, status: String! = "0"): [Livestream!]!
   me: Self!
   user(id: ID!): User!
   users(pageNumber: Int! = 0, pageSize: Int! = 20, searchTerm: String!): [User!]!

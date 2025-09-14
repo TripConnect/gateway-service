@@ -2,6 +2,7 @@ import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GatewayContext } from '../app.module';
 import { Livestream } from './models/graphql.model';
 import { LivestreamService } from './livestream.service';
+import { SearchLivestreamsRequest } from 'node-proto-lib/protos/livestream_service_pb';
 
 @Resolver()
 export class LivestreamResolver {
@@ -21,11 +22,20 @@ export class LivestreamResolver {
   // @UseGuards(GqlAuthGuard)
   @Query(() => [Livestream])
   async livestreams(
+    @Args('searchTerm', { type: () => String })
+    searchTerm: string,
+    @Args('status', { type: () => String, defaultValue: 0 })
+    status: string,
     @Args('pageNumber', { type: () => Int, defaultValue: 0 })
     pageNumber: number,
     @Args('pageSize', { type: () => Int, defaultValue: 20 })
     pageSize: number,
   ): Promise<Livestream[]> {
-    return await this.livestreamService.getActiveLivestreams();
+    const req = new SearchLivestreamsRequest()
+      .setStatus(status)
+      .setTerm(searchTerm)
+      .setPageNumber(pageNumber)
+      .setPageSize(pageSize);
+    return await this.livestreamService.searchLivestream(req);
   }
 }
