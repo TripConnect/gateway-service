@@ -1,8 +1,19 @@
-import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  ID,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import { GatewayContext } from '../app.module';
 import { Livestream } from './models/graphql.model';
 import { LivestreamService } from './livestream.service';
-import { SearchLivestreamsRequest } from 'node-proto-lib/protos/livestream_service_pb';
+import {
+  FindLivestreamRequest,
+  SearchLivestreamsRequest,
+} from 'node-proto-lib/protos/livestream_service_pb';
 
 @Resolver()
 export class LivestreamResolver {
@@ -37,5 +48,14 @@ export class LivestreamResolver {
       .setPageNumber(pageNumber)
       .setPageSize(pageSize);
     return await this.livestreamService.searchLivestream(req);
+  }
+
+  @Query(() => Livestream)
+  async livestream(
+    @Args('id', { type: () => ID })
+    id: string,
+  ): Promise<Livestream> {
+    const req = new FindLivestreamRequest().setLivestreamId(id);
+    return await this.livestreamService.findLivestream(req);
   }
 }

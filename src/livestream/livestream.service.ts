@@ -8,7 +8,10 @@ import { DiscoveryServiceClient } from 'node-proto-lib/protos/discovery_service_
 import * as grpc from '@grpc/grpc-js';
 import { DiscoveryRequest } from 'node-proto-lib/protos/discovery_service_pb';
 import { LivestreamServiceClient } from 'node-proto-lib/protos/livestream_service_grpc_pb';
-import { SearchLivestreamsRequest } from 'node-proto-lib/protos/livestream_service_pb';
+import {
+  FindLivestreamRequest,
+  SearchLivestreamsRequest,
+} from 'node-proto-lib/protos/livestream_service_pb';
 
 @Injectable()
 export class LivestreamService {
@@ -17,17 +20,6 @@ export class LivestreamService {
     new Map();
 
   constructor(private configService: ConfigService) {}
-
-  // async getActiveLivestreams(): Promise<Livestream[]> {
-  //   return Array.from(this.activeStreams.keys()).map(
-  //     (livestreamId) =>
-  //       new Livestream({
-  //         id: livestreamId,
-  //         createdBy: '',
-  //         hlsLink: `/livestreams/${livestreamId}/index.m3u8`,
-  //       }),
-  //   );
-  // }
 
   async searchLivestream(req: SearchLivestreamsRequest): Promise<Livestream[]> {
     const stub = await this.getStub();
@@ -41,6 +33,17 @@ export class LivestreamService {
               .getLivestreamsList()
               .map((livestream) => Livestream.fromGrpc(livestream)),
           );
+      });
+    });
+  }
+
+  async findLivestream(req: FindLivestreamRequest): Promise<Livestream> {
+    const stub = await this.getStub();
+
+    return new Promise((resolve, reject) => {
+      stub.findLivestream(req, (error, livestream) => {
+        if (error) reject(error);
+        else resolve(Livestream.fromGrpc(livestream));
       });
     });
   }
