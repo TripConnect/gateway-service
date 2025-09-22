@@ -104,13 +104,13 @@ export class SendMessageAck {
   }
 
   @Field()
-  correlationId: string;
+  messageId: string;
 
   static fromGrpcMessage(
     grpcMessage: GrpcCreateChatMessageAck,
   ): SendMessageAck {
     return new SendMessageAck({
-      correlationId: grpcMessage.getCorrelationId(),
+      messageId: grpcMessage.getCorrelationId(), // TODO: Rename field to MessageId
     });
   }
 }

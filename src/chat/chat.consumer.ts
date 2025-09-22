@@ -8,7 +8,7 @@ export class ChatConsumer implements OnModuleInit {
   constructor(
     private readonly chatGateway: ChatGateway,
     private readonly kafkaService: KafkaService,
-  ) {}
+  ) { }
 
   private readonly resolvers: TopicResolver[] = [
     {
@@ -18,7 +18,6 @@ export class ChatConsumer implements OnModuleInit {
       ) as string,
       resolver: async ({
         id,
-        correlation_id,
         conversation_id,
         from_user_id,
         content,
@@ -28,7 +27,6 @@ export class ChatConsumer implements OnModuleInit {
         console.log(content);
         this.chatGateway.server.to(conversation_id).emit('new_message', {
           id,
-          correlationId: correlation_id,
           conversationId: conversation_id,
           fromUserId: from_user_id,
           content,

@@ -76,7 +76,7 @@ type Self {
 }
 
 type SendMessageAck {
-  correlationId: String!
+  messageId: String!
 }
 
 type Settings {
