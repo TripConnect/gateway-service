@@ -11,6 +11,7 @@ import { GatewayContext } from '../app.module';
 import { Livestream } from './models/graphql.model';
 import { LivestreamService } from './livestream.service';
 import {
+  CreateLivestreamRequest,
   FindLivestreamRequest,
   SearchLivestreamsRequest,
 } from 'node-proto-lib/protos/livestream_service_pb';
@@ -21,13 +22,11 @@ export class LivestreamResolver {
 
   // @UseGuards(GqlAuthGuard)
   @Mutation(() => Livestream)
-  createLivestream(@Context() context: GatewayContext): Livestream {
-    const fakeId = crypto.randomUUID();
-    return new Livestream({
-      id: fakeId,
-      createdBy: context.currentUserId?.toString(),
-      hlsLink: `/livestreams/${fakeId}/index.m3u8`,
-    });
+  async createLivestream(
+    @Context() context: GatewayContext,
+  ): Promise<Livestream> {
+    const req = new CreateLivestreamRequest().setTitle('#').setThumbnail('#'); // TODO: Set owner info
+    return await this.livestreamService.createLivestream(req);
   }
 
   // @UseGuards(GqlAuthGuard)

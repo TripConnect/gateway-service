@@ -20,13 +20,6 @@ import { createReadStream, existsSync } from 'fs';
 export class LivestreamController {
   constructor(private readonly livestreamService: LivestreamService) {}
 
-  @Post()
-  createNewOne(): any {
-    return {
-      livestreamId: crypto.randomUUID(),
-    };
-  }
-
   @Post('/:livestreamId/status')
   checkStatus(@Param('livestreamId') livestreamId: string): any {
     return {
