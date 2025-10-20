@@ -10,7 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { SocketListenConversationRequest } from './models/socket.model';
 import { TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
-import { extractCookies } from './common/cookie';
+import { extractCookies } from 'src/common/cookie';
 
 @UseGuards(WsAuthGuard)
 @WebSocketGateway({
@@ -21,10 +21,10 @@ import { extractCookies } from './common/cookie';
 })
 @Injectable()
 export class ChatGateway {
-  constructor() {}
-
   @WebSocketServer()
   server: Server;
+
+  constructor() {}
 
   handleConnection(client: Socket) {
     const cookies = extractCookies(client.handshake.headers.cookie as string);

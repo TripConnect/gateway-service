@@ -4,6 +4,7 @@ import { memoryStorage } from 'multer';
 import { LivestreamController } from './livestream.controller';
 import { LivestreamService } from './livestream.service';
 import { ConfigModule } from '@nestjs/config';
+import { ChatGateway } from '../chat/chat.gateway';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [LivestreamController],
-  providers: [LivestreamService],
+  providers: [LivestreamService, ChatGateway],
   exports: [LivestreamService],
 })
 export class LivestreamModule {}

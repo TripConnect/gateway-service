@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { TokenHelper } from 'common-utils';
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
-import { extractCookies } from '../chat/common/cookie';
+import { extractCookies } from '../common/cookie';
 
 @Injectable()
 export class WsAuthGuard implements CanActivate {

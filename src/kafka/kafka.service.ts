@@ -1,10 +1,11 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigHelper } from 'common-utils';
+import { ConfigHelper, KafkaProducer } from 'common-utils';
 import { Kafka, logLevel as KafkaLogLevel } from 'kafkajs';
 
 @Injectable()
 export class KafkaService implements OnModuleInit {
   private kafkaInstance: Kafka;
+  private kafkaProducer: KafkaProducer;
 
   onModuleInit() {
     this.kafkaInstance = new Kafka({
@@ -14,9 +15,18 @@ export class KafkaService implements OnModuleInit {
       ],
       logLevel: KafkaLogLevel.ERROR,
     });
+
+    this.kafkaProducer = new KafkaProducer(this.kafkaInstance);
   }
 
   getClient(): Kafka {
     return this.kafkaInstance;
+  }
+
+  async publish(topic: string, payload: Record<string, any>) {
+    await this.kafkaProducer.publish({
+      topic,
+      message: JSON.stringify(payload),
+    });
   }
 }
