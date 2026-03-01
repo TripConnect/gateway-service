@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { SocketListenConversationRequest } from './models/socket.model';
+import { SocketListenConversationRequest } from 'src/chat/models/socket.model';
 import { TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
 import { extractCookies } from 'src/common/cookie';

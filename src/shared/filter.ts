@@ -1,7 +1,7 @@
 import { Catch, ArgumentsHost } from '@nestjs/common';
 import { GqlExceptionFilter } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { StatusCode } from './status';
+import { StatusCode } from 'src/shared/status';
 import * as grpc from '@grpc/grpc-js';
 
 @Catch()

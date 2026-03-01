@@ -7,7 +7,7 @@ import {
   Query,
   Resolver,
 } from '@nestjs/graphql';
-import { UserService } from './user.service';
+import { UserService } from 'src/user/user.service';
 import {
   FindUserRequest,
   SearchUserRequest,
@@ -15,14 +15,14 @@ import {
   SignUpRequest,
 } from 'node-proto-lib/protos/user_service_pb';
 import { GatewayContext } from 'src/app.module';
-import { AuthUser, Self, User } from './models/graphql.model';
+import { AuthUser, Self, User } from 'src/user/models/graphql.model';
 import { TwofaService } from 'src/twofa/twofa.service';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from '../guards/auth.guard';
-import { StatusCode } from '../shared/status';
+import { GqlAuthGuard } from 'src/guards/auth.guard';
+import { StatusCode } from 'src/shared/status';
 import { GraphQLError } from 'graphql';
 import { Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
-import { ResponseModel } from '../shared/models/response.model';
+import { ResponseModel } from 'src/shared/models/response.model';
 
 @Resolver()
 export class UserResolver {

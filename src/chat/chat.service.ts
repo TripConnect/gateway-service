@@ -11,7 +11,11 @@ import {
   CreateChatMessageRequest,
   GetChatMessagesRequest,
 } from 'node-proto-lib/protos/chat_service_pb';
-import { Conversation, Message, SendMessageAck } from './models/graphql.model';
+import {
+  Conversation,
+  Message,
+  SendMessageAck,
+} from 'src/chat/models/graphql.model';
 
 @Injectable()
 export class ChatService {

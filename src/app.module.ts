@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
+import { AppController } from 'src/app.controller';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { UserModule } from './user/user.module';
-import { UserResolver } from './user/user.resolver';
+import { UserModule } from 'src/user/user.module';
+import { UserResolver } from 'src/user/user.resolver';
 import { ConfigHelper, TokenHelper } from 'common-utils';
 import { Request, Response } from 'express';
-import { TwofaModule } from './twofa/twofa.module';
-import { TwofaResolver } from './twofa/twofa.resolver';
-import { ChatModule } from './chat/chat.module';
-import { ConversationResolver } from './chat/conversation.resolver';
-import { MessageResolver } from './chat/message.resolver';
-import { LivestreamModule } from './livestream/livestream.module';
-import { LivestreamResolver } from './livestream/livestream.resolver';
+import { TwofaModule } from 'src/twofa/twofa.module';
+import { TwofaResolver } from 'src/twofa/twofa.resolver';
+import { ChatModule } from 'src/chat/chat.module';
+import { ConversationResolver } from 'src/chat/conversation.resolver';
+import { MessageResolver } from 'src/chat/message.resolver';
+import { LivestreamModule } from 'src/livestream/livestream.module';
+import { LivestreamResolver } from 'src/livestream/livestream.resolver';
 
 export interface GatewayContext {
   req: Request;

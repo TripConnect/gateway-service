@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 import { spawn } from 'child_process';
-import { Livestream } from './models/graphql.model';
+import { Livestream } from 'src/livestream/models/graphql.model';
 import { ConfigService } from '@nestjs/config';
 import { DiscoveryServiceClient } from 'node-proto-lib/protos/discovery_service_grpc_pb';
 import * as grpc from '@grpc/grpc-js';

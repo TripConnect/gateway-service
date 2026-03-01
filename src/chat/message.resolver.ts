@@ -11,9 +11,9 @@ import { User } from 'src/user/models/graphql.model';
 import { Message, SendMessageAck } from 'src/chat/models/graphql.model';
 import { UserService } from 'src/user/user.service';
 import { FindUserRequest } from 'node-proto-lib/protos/user_service_pb';
-import { GatewayContext } from '../app.module';
+import { GatewayContext } from 'src/app.module';
 import { CreateChatMessageRequest } from 'node-proto-lib/protos/chat_service_pb';
-import { ChatService } from './chat.service';
+import { ChatService } from 'src/chat/chat.service';
 
 @Resolver(() => Message)
 export class MessageResolver {

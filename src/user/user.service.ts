@@ -11,7 +11,7 @@ import { UserServiceClient } from 'node-proto-lib/protos/user_service_grpc_pb';
 import { DiscoveryServiceClient } from 'node-proto-lib/protos/discovery_service_grpc_pb';
 import { DiscoveryRequest } from 'node-proto-lib/protos/discovery_service_pb';
 import { ConfigService } from '@nestjs/config';
-import { AuthUser, Self, User } from './models/graphql.model';
+import { AuthUser, Self, User } from 'src/user/models/graphql.model';
 
 @Injectable()
 export class UserService {

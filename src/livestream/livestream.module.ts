@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { LivestreamController } from './livestream.controller';
-import { LivestreamService } from './livestream.service';
+import { LivestreamController } from 'src/livestream/livestream.controller';
+import { LivestreamService } from 'src/livestream/livestream.service';
 import { ConfigModule } from '@nestjs/config';
-import { ChatGateway } from '../chat/chat.gateway';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 @Module({
   imports: [

@@ -9,7 +9,7 @@ import {
   Generate2faRequest,
   Validate2faRequest,
 } from 'node-proto-lib/protos/twofa_service_pb';
-import { Settings, Validation } from './models/graphql.model';
+import { Settings, Validation } from 'src/twofa/models/graphql.model';
 import { ResponseModel } from 'src/shared/models/response.model';
 
 @Injectable()
