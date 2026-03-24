@@ -38,11 +38,10 @@ async function bootstrap() {
   configureGlobalMiddleware(app);
   configureSwagger(app);
 
-  await app.listen(ConfigHelper.read('server.port') as number);
+  await app.listen(ConfigHelper.read('server.port') as number, '0.0.0.0');
 }
 
 bootstrap().catch((error) => {
-  // eslint-disable-next-line no-console
   console.error('Failed to bootstrap application', error);
   process.exit(1);
 });
