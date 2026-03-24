@@ -12,8 +12,8 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { GatewayContext } from 'src/app.module';
-import { ChatService } from './chat.service';
-import { Conversation, Message } from './models/graphql.model';
+import { ChatService } from 'src/chat/chat.service';
+import { Conversation, Message } from 'src/chat/models/graphql.model';
 import {
   ConversationType,
   CreateConversationRequest,
@@ -25,7 +25,7 @@ import { UserService } from 'src/user/user.service';
 import { GetUsersRequest } from 'node-proto-lib/protos/user_service_pb';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from '../guards/auth.guard';
+import { GqlAuthGuard } from 'src/guards/auth.guard';
 
 registerEnumType(ConversationType, {
   name: 'ConversationType',

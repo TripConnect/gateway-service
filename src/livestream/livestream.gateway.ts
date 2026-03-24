@@ -10,11 +10,11 @@ import { Server, Socket } from 'socket.io';
 import {
   SessionData,
   SocketListenLivestreamRequest,
-} from './models/socket.model';
+} from 'src/livestream/models/socket.model';
 import { ConfigHelper, TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
 import { extractCookies } from 'src/common/cookie';
-import { KafkaService } from '../kafka/kafka.service';
+import { KafkaService } from 'src/kafka/kafka.service';
 
 @UseGuards(WsAuthGuard)
 @WebSocketGateway({

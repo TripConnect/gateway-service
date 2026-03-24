@@ -7,9 +7,9 @@ import {
   Query,
   Resolver,
 } from '@nestjs/graphql';
-import { GatewayContext } from '../app.module';
-import { Livestream } from './models/graphql.model';
-import { LivestreamService } from './livestream.service';
+import { GatewayContext } from 'src/app.module';
+import { Livestream } from 'src/livestream/models/graphql.model';
+import { LivestreamService } from 'src/livestream/livestream.service';
 import {
   CreateLivestreamRequest,
   FindLivestreamRequest,

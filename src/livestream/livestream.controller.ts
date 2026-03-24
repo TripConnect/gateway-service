@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { LivestreamService } from './livestream.service';
+import { LivestreamService } from 'src/livestream/livestream.service';
 import { join } from 'path';
 import { Response } from 'express';
 import { createReadStream, existsSync } from 'fs';

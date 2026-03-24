@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from 'src/user/user.module';
-import { TwofaService } from './twofa.service';
+import { TwofaService } from 'src/twofa/twofa.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({

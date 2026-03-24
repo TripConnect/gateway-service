@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigHelper, KafkaListener, TopicResolver } from 'common-utils';
-import { ChatGateway } from './chat.gateway';
-import { KafkaService } from '../kafka/kafka.service';
+import { ChatGateway } from 'src/chat/chat.gateway';
+import { KafkaService } from 'src/kafka/kafka.service';
 
 @Injectable()
 export class ChatConsumer implements OnModuleInit {
@@ -42,6 +42,12 @@ export class ChatConsumer implements OnModuleInit {
       this.kafkaService.getClient(),
       this.resolvers,
     );
-    await kafkaListener.listen();
+
+    try {
+      await kafkaListener.listen();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Kafka listener initialization failed', error);
+    }
   }
 }
