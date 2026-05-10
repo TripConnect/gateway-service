@@ -3,6 +3,7 @@ import { TokenHelper } from 'common-utils';
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
 import { extractCookies } from 'src/common/cookie';
+import { setCurrentUserOnActiveSpan } from 'src/tracing/user-tracing';
 
 @Injectable()
 export class WsAuthGuard implements CanActivate {
@@ -21,6 +22,7 @@ export class WsAuthGuard implements CanActivate {
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       client.data.user = payload;
+      setCurrentUserOnActiveSpan(payload.userId);
       console.log('Socket connected ' + payload.userId);
       return true;
     } catch (error) {

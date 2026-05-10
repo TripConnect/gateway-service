@@ -15,6 +15,7 @@ import { ConfigHelper, TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
 import { extractCookies } from 'src/common/cookie';
 import { KafkaService } from 'src/kafka/kafka.service';
+import { setCurrentUserOnActiveSpan } from 'src/tracing/user-tracing';
 
 @UseGuards(WsAuthGuard)
 @WebSocketGateway({
@@ -41,6 +42,7 @@ export class LivestreamGateway {
         return client.disconnect();
       }
       client.data.user = jwtBody;
+      setCurrentUserOnActiveSpan(jwtBody.userId);
       console.log('Socket connected:', jwtBody.userId);
     } catch (err) {
       console.error('Socket connection error:', err);

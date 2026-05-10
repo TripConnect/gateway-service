@@ -1,10 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { ConfigHelper } from 'common-utils';
 import { AppModule } from 'src/app.module';
 import { GrpcExceptionFilter } from 'src/shared/filter';
+import { userTraceMiddleware } from 'src/tracing/user-tracing';
 
 function configureCors(app: INestApplication) {
   app.enableCors({
@@ -16,6 +17,7 @@ function configureCors(app: INestApplication) {
 
 function configureGlobalMiddleware(app: INestApplication) {
   app.use(cookieParser());
+  app.use(userTraceMiddleware);
   app.useGlobalFilters(new GrpcExceptionFilter());
 }
 

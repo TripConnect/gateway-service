@@ -23,6 +23,7 @@ import { StatusCode } from 'src/shared/status';
 import { GraphQLError } from 'graphql';
 import { Validate2faRequest } from 'node-proto-lib/protos/twofa_service_pb';
 import { ResponseModel } from 'src/shared/models/response.model';
+import { setCurrentUserOnActiveSpan } from 'src/tracing/user-tracing';
 
 @Resolver()
 export class UserResolver {
@@ -57,6 +58,8 @@ export class UserResolver {
       }
     }
 
+    setCurrentUserOnActiveSpan(authenticatedInfo.userInfo?.id);
+
     context.res.cookie('access_token', authenticatedInfo.token.accessToken, {
       httpOnly: true,
       secure: true,
@@ -86,7 +89,9 @@ export class UserResolver {
       .setUsername(username)
       .setPassword(password)
       .setDisplayName(displayName);
-    return await this.userService.signUp(req);
+    const authenticatedInfo = await this.userService.signUp(req);
+    setCurrentUserOnActiveSpan(authenticatedInfo.userInfo?.id);
+    return authenticatedInfo;
   }
 
   @Mutation(() => ResponseModel)

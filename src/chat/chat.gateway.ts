@@ -11,6 +11,7 @@ import { SocketListenConversationRequest } from 'src/chat/models/socket.model';
 import { TokenHelper } from 'common-utils';
 import { WsAuthGuard } from 'src/guards/socket.guard';
 import { extractCookies } from 'src/common/cookie';
+import { setCurrentUserOnActiveSpan } from 'src/tracing/user-tracing';
 
 @UseGuards(WsAuthGuard)
 @WebSocketGateway({
@@ -38,6 +39,7 @@ export class ChatGateway {
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       client.data.user = jwtBody;
+      setCurrentUserOnActiveSpan(jwtBody.userId);
       console.log('Socket connected:', jwtBody.userId);
     } catch (err) {
       console.error('Socket connection error:', err);
