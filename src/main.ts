@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { ConfigHelper } from 'common-utils';
 import { AppModule } from 'src/app.module';
 import { GrpcExceptionFilter } from 'src/shared/filter';
