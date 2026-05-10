@@ -3,7 +3,6 @@ import { RequestHandler } from 'express';
 import { TokenHelper } from 'common-utils';
 
 export const USER_ID_TRACE_ATTRIBUTE = 'user.id';
-export const LEGACY_USER_ID_TRACE_ATTRIBUTE = 'enduser.id';
 
 type RequestCookies = {
   cookies?: Record<string, string | undefined>;
@@ -14,7 +13,6 @@ export function setCurrentUserOnActiveSpan(userId?: string | null): void {
 
   trace.getActiveSpan()?.setAttributes({
     [USER_ID_TRACE_ATTRIBUTE]: userId,
-    [LEGACY_USER_ID_TRACE_ATTRIBUTE]: userId,
   });
 }
 
